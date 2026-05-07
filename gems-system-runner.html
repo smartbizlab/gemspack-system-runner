@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gems Pack — System Runner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e0e0f;
+  --surface: #161618;
+  --surface2: #1e1e21;
+  --surface3: #252528;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #e8e6e0;
+  --text2: #9e9b93;
+  --text3: #5e5c57;
+  --accent: #d4a84b;
+  --accent2: #b8872e;
+  --success: #4a9e6e;
+  --success-bg: rgba(74,158,110,0.1);
+  --warn: #c4813a;
+  --warn-bg: rgba(196,129,58,0.1);
+  --info: #5b8fd4;
+  --info-bg: rgba(91,143,212,0.1);
+  --font-display: 'DM Serif Display', serif;
+  --font-body: 'Outfit', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── Layout ── */
+.app-shell {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 20px 80px;
+}
+
+/* ── Header ── */
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 0 24px;
+  border-bottom: 0.5px solid var(--border);
+  margin-bottom: 32px;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo-mark {
+  width: 32px;
+  height: 32px;
+  background: var(--accent);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.logo-name {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+.logo-sub {
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.header-right {
+  font-size: 12px;
+  color: var(--text3);
+}
+
+/* ── Screen transitions ── */
+.screen { display: none; animation: fadeIn 0.2s ease; }
+.screen.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── Selector screen ── */
+.sel-intro { margin-bottom: 28px; }
+.sel-intro h1 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+.sel-intro p { color: var(--text2); font-size: 14px; }
+
+.sys-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.sys-card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  position: relative;
+  overflow: hidden;
+}
+.sys-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.2s ease;
+}
+.sys-card:hover { border-color: var(--border2); background: var(--surface2); transform: translateY(-1px); }
+.sys-card:hover::before { transform: scaleX(1); }
+.sys-card.has-progress::before { transform: scaleX(1); background: var(--success); }
+
+.sys-num {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+.sys-card.has-progress .sys-num { color: var(--success); }
+.sys-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+.sys-prob {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.45;
+  margin-bottom: 10px;
+}
+.sys-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text3);
+}
+.sys-progress-bar {
+  height: 2px;
+  background: var(--border);
+  border-radius: 2px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+.sys-progress-fill {
+  height: 100%;
+  background: var(--success);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* ── Runner screen ── */
+.runner-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.runner-info h2 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+.runner-info p { font-size: 13px; color: var(--text2); }
+
+.back-btn {
+  background: var(--surface2);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 7px 14px;
+  font-size: 12px;
+  font-family: var(--font-body);
+  color: var(--text2);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: border-color 0.15s, color 0.15s;
+}
+.back-btn:hover { border-color: var(--border2); color: var(--text); }
+
+/* ── Progress stepper ── */
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 28px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+.stepper::-webkit-scrollbar { display: none; }
+
+.step-pip-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  position: relative;
+}
+.step-pip {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--surface3);
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  color: var(--text3);
+  transition: all 0.2s;
+  position: relative;
+  z-index: 1;
+}
+.step-pip-wrap.done .step-pip { background: var(--success-bg); border-color: var(--success); color: var(--success); }
+.step-pip-wrap.active .step-pip { background: var(--accent); border-color: var(--accent); color: #0e0e0f; font-weight: 700; }
+.step-pip-wrap .step-gem-label {
+  font-size: 9px;
+  color: var(--text3);
+  margin-top: 4px;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  transition: color 0.2s;
+}
+.step-pip-wrap.active .step-gem-label { color: var(--accent); }
+.step-pip-wrap.done .step-gem-label { color: var(--success); }
+
+.step-connector {
+  height: 1.5px;
+  flex: 1;
+  min-width: 12px;
+  background: var(--border);
+  margin-bottom: 18px;
+  flex-shrink: 0;
+}
+.step-connector.done { background: var(--success); opacity: 0.5; }
+
+/* ── Step card ── */
+.step-card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.step-header {
+  padding: 18px 20px 16px;
+  border-bottom: 0.5px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.gem-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--accent);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+  color: #0e0e0f;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+.step-header-text { flex: 1; }
+.step-gem-name {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 3px;
+  font-family: var(--font-mono);
+}
+.step-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+.step-desc { font-size: 13px; color: var(--text2); line-height: 1.5; }
+
+.step-body { padding: 18px 20px; }
+
+/* ── Section labels ── */
+.sec-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sec-label::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 10px;
+  background: var(--accent);
+  border-radius: 2px;
+  opacity: 0.6;
+}
+
+/* ── Inputs checklist ── */
+.input-list { margin-bottom: 16px; }
+.inp-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 7px 0;
+  cursor: pointer;
+  border-bottom: 0.5px solid var(--border);
+}
+.inp-row:last-child { border-bottom: none; }
+.inp-row:hover .inp-txt { color: var(--text); }
+
+.chkbox {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--text3);
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  font-size: 10px;
+}
+.chkbox.on { background: var(--success); border-color: var(--success); color: #fff; }
+.inp-txt { font-size: 13px; color: var(--text2); line-height: 1.5; transition: color 0.15s; }
+.inp-txt.done { text-decoration: line-through; opacity: 0.4; }
+
+/* ── Checkpoint ── */
+.checkpoint {
+  background: var(--warn-bg);
+  border: 0.5px solid rgba(196,129,58,0.3);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--warn);
+  line-height: 1.5;
+  margin-bottom: 16px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.checkpoint-icon { flex-shrink: 0; font-size: 13px; }
+
+/* ── Prompt ── */
+.prompt-wrap {
+  position: relative;
+  margin-bottom: 16px;
+}
+.prompt-box {
+  background: var(--surface2);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.prompt-var { color: var(--accent); font-weight: 500; }
+.copy-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--surface3);
+  border: 0.5px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  font-size: 11px;
+  font-family: var(--font-body);
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.copy-btn:hover { color: var(--text); border-color: var(--accent); }
+.copy-btn.copied { color: var(--success); border-color: var(--success); }
+
+/* ── Output note ── */
+.output-note {
+  background: var(--success-bg);
+  border: 0.5px solid rgba(74,158,110,0.25);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 12px;
+  color: #7ec89d;
+  line-height: 1.6;
+  margin-bottom: 16px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.output-note-icon { flex-shrink: 0; }
+
+/* ── Output field ── */
+.output-field-wrap { margin-top: 4px; }
+.output-textarea {
+  width: 100%;
+  background: var(--surface2);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.7;
+  resize: vertical;
+  min-height: 90px;
+  transition: border-color 0.15s;
+  outline: none;
+}
+.output-textarea::placeholder { color: var(--text3); }
+.output-textarea:focus { border-color: var(--border2); }
+.output-textarea.has-content { border-color: rgba(74,158,110,0.35); }
+
+.save-note {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 6px;
+  font-family: var(--font-mono);
+}
+
+/* ── Nav ── */
+.step-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+}
+.nav-btn {
+  background: var(--surface2);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 20px;
+  font-size: 13px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.nav-btn:hover:not(:disabled) { border-color: var(--border2); color: var(--text); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.nav-btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0e0e0f;
+  font-weight: 600;
+}
+.nav-btn.primary:hover:not(:disabled) { background: #e0b558; border-color: #e0b558; }
+.step-counter {
+  font-size: 12px;
+  color: var(--text3);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+/* ── Complete card ── */
+.complete-wrap {
+  margin-top: 4px;
+}
+.complete-card {
+  background: var(--success-bg);
+  border: 0.5px solid rgba(74,158,110,0.3);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+.complete-icon { font-size: 28px; margin-bottom: 8px; }
+.complete-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  color: #7ec89d;
+  margin-bottom: 6px;
+}
+.complete-sub { font-size: 13px; color: var(--success); opacity: 0.8; line-height: 1.5; }
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.kpi-card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+.kpi-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 6px;
+  font-family: var(--font-mono);
+}
+.kpi-content { font-size: 12px; color: var(--text2); line-height: 1.6; }
+
+.restart-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--surface2);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 20px;
+  font-size: 13px;
+  font-family: var(--font-body);
+  color: var(--text2);
+  cursor: pointer;
+  margin: 0 auto;
+  transition: all 0.15s;
+}
+.restart-btn:hover { border-color: var(--border2); color: var(--text); }
+
+/* ── Completion screen extras ── */
+.completion-section { margin-top: 20px; }
+.completion-section-title {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 10px;
+  font-family: var(--font-mono);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.completion-section-title::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 10px;
+  background: var(--accent);
+  border-radius: 2px;
+  opacity: 0.6;
+}
+
+/* Export brief */
+.export-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--surface2);
+  border: 0.5px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 14px 20px;
+  font-size: 13px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-bottom: 8px;
+}
+.export-btn:hover { border-color: var(--accent); background: var(--surface3); }
+.export-btn .export-icon { font-size: 16px; opacity: 0.7; }
+.export-hint { font-size: 11px; color: var(--text3); text-align: center; font-family: var(--font-mono); }
+
+/* Related systems */
+.related-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.related-card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
+.related-card:hover { border-color: var(--border2); background: var(--surface2); }
+.related-sys-num { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-family: var(--font-mono); }
+.related-sys-name { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px; line-height: 1.3; }
+.related-preload { font-size: 11px; color: var(--text2); line-height: 1.4; margin-bottom: 8px; }
+.related-preload strong { color: var(--accent); font-weight: 500; }
+.related-action {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent);
+  font-family: var(--font-mono);
+}
+.related-action::after { content: '→'; }
+
+/* ── Divider ── */
+.divider { height: 0.5px; background: var(--border); margin: 16px 0; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <header class="site-header">
+    <div class="logo">
+      <div class="logo-mark">✦</div>
+      <div>
+        <div class="logo-name">Gems Pack</div>
+        <div class="logo-sub">System Runner</div>
+      </div>
+    </div>
+    <div class="header-right">rodolfobuitrago.com</div>
+  </header>
+
+  <main>
+    <div class="screen active" id="screen-select">
+      <div class="sel-intro">
+        <h1>¿Qué sistema<br><em>necesitas ejecutar hoy?</em></h1>
+        <p>Elige el sistema que corresponde a tu situación. La app te guía por cada Gem en secuencia y recuerda tu progreso.</p>
+      </div>
+      <div class="sys-grid" id="sys-grid"></div>
+    </div>
+
+    <div class="screen" id="screen-runner">
+      <div class="runner-top">
+        <div class="runner-info">
+          <h2 id="rh-title"></h2>
+          <p id="rh-sub"></p>
+        </div>
+        <button class="back-btn" onclick="goBack()">← Sistemas</button>
+      </div>
+      <div class="stepper" id="stepper"></div>
+      <div id="step-view"></div>
+      <div class="step-nav">
+        <button class="nav-btn" id="btn-prev" onclick="nav(-1)">← Anterior</button>
+        <span class="step-counter" id="step-counter"></span>
+        <button class="nav-btn primary" id="btn-next" onclick="nav(1)">Siguiente →</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const SYSTEMS = [
+  {
+    id:1, name:"Lanzamiento de producto digital", steps_count:11,
+    problem:"Tienes conocimiento pero no sabes cómo convertirlo en un producto que se venda.",
+    result:"Producto digital creado con landing page, secuencia de ventas y plan de lanzamiento.",
+    kpis:{q:"Ventas en primeras 72h, tasa de conversión de landing (benchmark 3–8%), tasa de respuesta WhatsApp.",c:"Claridad del mensaje (test con 3 personas externas), coherencia entre promesa y contenido."},
+    steps:[
+      {gem:"Kenji",title:"Validación de propósito",desc:"Confirma que el tema elegido está en tu zona de genialidad antes de construir nada.",
+       inputs:["Tu experiencia profesional y años en el área","Temas o habilidades que dominas y disfrutas","El tipo de resultado que produces para otros","Actividades que haces con fluidez natural"],
+       prompt:`Quiero lanzar un producto digital sobre [tema].
+
+Mi experiencia: [años] años en [área].
+Lo que mejor sé hacer: [habilidades].
+El resultado que produzco para otros: [transformación].
+
+Ejecuta el diagnóstico Ikigai completo. Dime si el tema cruza al menos 3 de los 4 círculos. Si no cruza, sugiere el pivote antes de continuar.`,
+       checkpoint:"¿El tema cruza al menos 3 de los 4 círculos del Ikigai? Si no, pivotea antes de avanzar.",
+       output_note:"Guarda el tema confirmado y tu zona de genialidad — son el input de Aura en el siguiente paso."},
+      {gem:"Aura",title:"Investigación de audiencia",desc:"Construye el Buyer Persona con perfil psicológico completo y arquitectura de objeciones.",
+       inputs:["Tema validado de Kenji","Tipo de monetización deseada (ebook, guía, plantilla)","Ejemplos de personas que podrían ser tu cliente ideal","La transformación principal que promete tu producto"],
+       prompt:`Tema del producto: [tema de Kenji]
+Tipo de monetización: [formato]
+Cliente ideal probable: [descripción]
+Transformación que promete: [resultado]
+
+Ejecuta tu protocolo de 5 fases: Producto, Dolor, Transformación, Mecanismo, Hábitos. Entrega Buyer Persona con perfil psicológico, mapa de objeciones y perfil priorizado por urgencia de dolor y capacidad de pago.`,
+       checkpoint:"¿Puedes describir el dolor #1 de tu cliente en una frase sin usar jerga? Si no, regresa a Aura.",
+       output_note:"Guarda el dolor #1 y las 3 objeciones principales — los usa Lexis y Kratos en los pasos siguientes."},
+      {gem:"Lexis",title:"Fundamentación con datos",desc:"Investiga datos, estadísticas y tendencias que respalden la promesa de tu producto.",
+       inputs:["Tema del producto","Buyer Persona de Aura","Promesa principal del producto","Industria o nicho al que pertenece"],
+       prompt:`Necesito un expediente de investigación para un producto digital sobre [tema].
+
+Audiencia: [Buyer Persona de Aura]
+Promesa del producto: [transformación prometida]
+Industria: [nicho]
+
+Investiga: datos duros, estadísticas, tendencias de mercado y fuentes confiables que respalden la promesa. Mínimo 5 datos verificables.`,
+       checkpoint:"¿Tienes al menos 5 datos duros o referencias que respalden la promesa de tu producto?",
+       output_note:"Guarda los 5+ datos clave — los usa EbookPro como contenido y Kratos como prueba social."},
+      {gem:"ProductMaster",title:"Arquitectura del producto",desc:"Diseña la estructura completa: MVP, índice y viaje de transformación del cliente.",
+       inputs:["Buyer Persona de Aura","Expediente de Lexis","Tema validado de Kenji","Formato del producto (ebook, guía, plantilla, mini-curso)"],
+       prompt:`Necesito diseñar la arquitectura de mi producto digital.
+
+Tema: [tema]
+Formato: [formato]
+Buyer Persona: [descripción de Aura]
+Datos clave disponibles: [datos de Lexis]
+
+Ejecuta tu Pipeline de 7 etapas. Entrega: índice detallado, MVP definido y viaje de transformación del cliente. Cada sección debe resolver un problema específico del Buyer Persona.`,
+       checkpoint:"¿Cada capítulo/sección resuelve un problema específico del Buyer Persona?",
+       output_note:"Guarda el índice completo — es el input directo de EbookPro."},
+      {gem:"EbookPro",title:"Redacción del contenido",desc:"Redacta el contenido sección por sección con el tono adecuado para tu audiencia.",
+       inputs:["Índice de ProductMaster","Datos verificados de Lexis","Tono de voz deseado (educativo, directo, narrativo)","Nivel de expertise de tu audiencia"],
+       prompt:`Quiero redactar mi producto digital.
+
+Índice: [índice de ProductMaster]
+Datos de apoyo: [datos de Lexis]
+Tono: [tono deseado]
+Nivel del lector: [principiante / intermedio / avanzado]
+
+Redacta sección por sección. Empieza por la sección 1. Confirma antes de avanzar a la siguiente.`,
+       output_note:"Guarda el texto final de cada sección — lo usa Kratos para construir el mensaje de venta."},
+      {gem:"Kratos",title:"Propuesta única de valor",desc:"Destila tu diferenciador real en un mensaje que se entiende en 5 segundos.",
+       inputs:["Producto terminado (resumen de EbookPro)","Buyer Persona con objeciones de Aura","El dolor #1 del cliente","Tu mecanismo diferenciador"],
+       prompt:`Necesito construir la PUV de mi producto digital.
+
+Producto: [descripción de EbookPro]
+Buyer Persona: [perfil de Aura]
+Dolor #1: [dolor de Aura]
+Mi diferenciador: [mecanismo propio]
+
+Ejecuta Diagnóstico Crítico, Filtrado de Valor y Arquitectura de Mensaje. Entrega: pitch de elevador, titular web y narrativa persuasiva.`,
+       checkpoint:"¿Alguien externo entiende qué vendes y por qué les importa en 5 segundos?",
+       output_note:"Guarda el titular web y la narrativa — los usa Alex y LandingPro."},
+      {gem:"Alex",title:"Oferta irresistible (Grand Slam)",desc:"Estructura tu producto como una oferta donde decir 'no' parezca irracional.",
+       inputs:["PUV de Kratos","Producto con entregables detallados","Precio objetivo","Posibles bonos o garantías"],
+       prompt:`Quiero estructurar una Oferta Grand Slam para mi producto digital.
+
+PUV: [titular de Kratos]
+Producto: [descripción con entregables]
+Precio objetivo: [precio]
+Posibles bonos: [lista]
+
+Aplica el framework de Hormozi: Ecuación de Valor, Creación de Soluciones, Trim & Stack, Psicología de Oferta (escasez, urgencia, bonos, garantía) y Naming.`,
+       output_note:"Guarda el stack completo — lo usa LandingPro para la página de ventas."},
+      {gem:"LandingPro",title:"Página de ventas",desc:"Construye el copy completo de la landing page sección por sección.",
+       inputs:["Oferta Grand Slam de Alex","PUV y titular de Kratos","Buyer Persona con objeciones de Aura","Testimonios o resultados (si tienes)"],
+       prompt:`Necesito el copy completo de mi landing page.
+
+PUV: [titular de Kratos]
+Oferta: [nombre y stack de Alex]
+Cliente ideal: [descripción de Aura]
+Objeciones principales: [3 objeciones de Aura]
+Prueba social: [testimonios o resultados]
+
+Construye sección por sección: titular, subtítulo, agitación del problema, solución, beneficios, prueba social, FAQ, CTA. Espera mi validación en cada sección antes de avanzar.`,
+       output_note:"Guarda la sección FAQ y el CTA principal — los usa VentasFlow."},
+      {gem:"VSLMaster",title:"Guión de video de ventas (VSL)",desc:"Crea el guión del VSL basado en storytelling persuasivo y psicología del consumidor.",
+       inputs:["Copy de landing de LandingPro","Buyer Persona de Aura","Tu historia personal relacionada al tema","Prueba social disponible"],
+       prompt:`Necesito el guión completo de mi Video Sales Letter.
+
+Copy de landing: [resumen de LandingPro]
+Buyer Persona: [perfil de Aura]
+Mi historia: [historia personal]
+Prueba social: [testimonios o resultados]
+
+Estructura el guión: hook, problema, historia, solución, mecanismo, prueba social, oferta, garantía, urgencia, CTA.`,
+       output_note:"Guarda el hook de apertura — úsalo también como gancho para los Reels de lanzamiento."},
+      {gem:"VentasFlow",title:"Secuencia de cierre WhatsApp",desc:"Diseña el flujo desde primer contacto hasta cierre de carrito a las 24h.",
+       inputs:["Oferta Grand Slam de Alex","Objeciones principales de Aura","CTA de la landing de LandingPro","Tu nombre y estilo de comunicación"],
+       prompt:`Necesito la secuencia completa de cierre por WhatsApp para mi lanzamiento.
+
+Producto: [nombre y precio de Alex]
+Carrito abierto: [fecha]
+Cierre de carrito: [fecha — máximo 48h]
+Objeciones frecuentes: [objeciones de Aura]
+
+Diseña el flujo cronológico: apertura, nurturing, manejo de objeción principal, urgencia de cierre, mensaje final. Mensajes listos para copiar y pegar con timing.`,
+       output_note:"Guarda todos los mensajes — son la ejecución final del lanzamiento."},
+      {gem:"Cronos",title:"Plan de ejecución del lanzamiento",desc:"Organiza todos los entregables en un calendario exportable con bloques de tiempo.",
+       inputs:["Todos los entregables anteriores completados","Fecha objetivo de lanzamiento","Horas disponibles por día","Compromisos fijos en tu agenda"],
+       prompt:`Necesito un plan de ejecución para mi lanzamiento.
+
+Entregables listos: [lista de lo que ya tienes]
+Entregables pendientes: [lista de lo que falta]
+Fecha de lanzamiento: [fecha]
+Horas disponibles/día: [horas]
+Compromisos fijos: [compromisos]
+
+Crea una Tabla Maestra con bloques de tiempo por día, priorizando por dependencias. Incluye márgenes de error. Formato exportable a Google Sheets.`,
+       output_note:"Calendario de lanzamiento exportable a Google Sheets. Sistema completo."}
+    ]
+  },
+  {
+    id:2, name:"Venta como afiliado", steps_count:8,
+    problem:"Quieres vender productos de terceros pero sin estrategia ni ángulo de venta propio.",
+    result:"Ecosistema de contenido + página puente + secuencia de cierre que genera comisiones predecibles.",
+    kpis:{q:"CTR de link de afiliado, tasa de conversión de página puente, comisiones mensuales.",c:"Percepción de autoridad — te buscan a ti, no al producto directamente."},
+    steps:[
+      {gem:"Lexis",title:"Investigación del producto y nicho",desc:"Analiza el producto, la competencia de afiliados y la demanda del nicho.",inputs:["URL del producto a promover","Plataforma de afiliación (Hotmart, ClickBank, otra)","Precio y comisión del producto","Tu audiencia actual o audiencia objetivo"],prompt:`Necesito investigar este producto de afiliado antes de promoverlo.\n\nURL del producto: [URL]\nPlataforma: [plataforma]\nPrecio: [precio] | Comisión: [comisión]\nMi audiencia: [descripción]\n\nAnaliza: fortalezas y debilidades del producto, ángulos de venta no explotados por otros afiliados, demanda del nicho y señales de credibilidad del vendedor.`,checkpoint:"¿El producto tiene tasa de reembolso aceptable y demanda comprobable? Si no, cambia de producto.",output_note:"Guarda los ángulos vírgenes — son tu ventaja competitiva frente a otros afiliados."},
+      {gem:"Aura",title:"Buyer Persona del comprador final",desc:"Perfil psicológico del comprador con objeciones específicas hacia productos de afiliados.",inputs:["Expediente de Lexis","Tipo de producto (curso, software, físico, servicio)","Problema principal que resuelve el producto","Precio del producto"],prompt:`Necesito el Buyer Persona del comprador de este producto de afiliado.\n\nProducto: [descripción del producto]\nExpediente de mercado: [hallazgos de Lexis]\nPrecio: [precio]\n\nBuyer Persona con objeciones específicas hacia productos de afiliados y triggers de compra.`,output_note:"Guarda las objeciones específicas hacia afiliados — las usa Kratos para tu diferenciador."},
+      {gem:"Schwartz",title:"Nivel de consciencia de la audiencia",desc:"Diagnostica en qué nivel está tu audiencia para calibrar el mensaje correctamente.",inputs:["Buyer Persona de Aura","Canal de distribución (Instagram, LinkedIn, YouTube, email)","Si tu audiencia ya conoce el producto","Si conocen el problema que el producto resuelve"],prompt:`Necesito diagnosticar el nivel de consciencia de mi audiencia para este producto de afiliado.\n\nBuyer Persona: [descripción de Aura]\nCanal: [canal]\n¿Conocen el producto? [sí / no / algunos]\n¿Conocen el problema? [sí / no]\n\nDiagnostica el nivel (inconsciente → más consciente) y entrega ganchos apropiados, ángulos emocionales y estructura de mensaje.`,checkpoint:"¿Tu contenido habla al nivel correcto? Si tu audiencia no sabe que tiene el problema, no puedes empezar hablando del producto.",output_note:"Guarda el nivel diagnosticado y los ganchos — dirigen todo el contenido que sigue."},
+      {gem:"Kratos",title:"Ángulo diferenciador como afiliado",desc:"Construye por qué el prospecto debería comprarte a ti y no directamente o a otro afiliado.",inputs:["Expediente de Lexis (ángulos no explotados)","Buyer Persona con objeciones de Aura","Nivel de consciencia de Schwartz","Algo tuyo que puedas añadir (bono, experiencia, acceso)"],prompt:`Necesito mi ángulo diferenciador como afiliado de [producto].\n\nÁngulos vírgenes: [ángulos de Lexis]\nObjeciones del comprador: [objeciones de Aura]\nNivel de consciencia: [nivel de Schwartz]\nLo que puedo añadir yo: [bono, experiencia personal, comunidad]\n\nConstruye mi PUV como afiliado y el bono exclusivo que solo yo ofrezco.`,output_note:"Guarda el ángulo y el bono — son el eje de todo el copy que sigue."},
+      {gem:"CopyMaster",title:"Kit de copy del funnel",desc:"Redacta página puente, secuencia de emails y piezas de autoridad.",inputs:["PUV como afiliado de Kratos","Buyer Persona de Aura","Nivel Schwartz y ganchos","Bono exclusivo definido"],prompt:`Necesito el kit completo de copy para mi funnel de afiliado.\n\nMi PUV como afiliado: [ángulo de Kratos]\nBono exclusivo: [bono de Kratos]\nBuyer Persona: [descripción de Aura]\nNivel de consciencia: [nivel de Schwartz]\n\nRedacta: 1) Página puente que pre-vende antes del clic, 2) Secuencia de 3 emails de nurturing, 3) Una pieza de autoridad (comparativa o review honesta).`,output_note:"Guarda la página puente — es el activo más importante del sistema."},
+      {gem:"ReelPro",title:"Guiones de tráfico orgánico",desc:"Diseña 5 guiones de Reels/TikTok con hooks disruptivos hacia tu página puente.",inputs:["Ángulo diferenciador de Kratos","Buyer Persona de Aura","Ganchos del nivel Schwartz","URL de tu página puente"],prompt:`Necesito 5 guiones de Reels/TikTok para atraer tráfico a mi funnel de afiliado.\n\nMi ángulo: [ángulo de Kratos]\nAudiencia: [Buyer Persona de Aura]\nNivel de consciencia: [nivel de Schwartz]\nCTA destino: [página puente]\n\n5 guiones con hooks distintos y alta retención. Formato tabla: Audio | Visual.`,output_note:"Guarda los 2 hooks con mejor potencial — úsalos primero para testear."},
+      {gem:"Copylink",title:"Posts de LinkedIn (audiencia B2B)",desc:"Posts de autoridad para LinkedIn. Opcional si tu audiencia es B2C.",inputs:["PUV como afiliado de Kratos","Buyer Persona B2B de Aura","Nivel Schwartz para LinkedIn","3 temas de autoridad relacionados al producto"],prompt:`Necesito 3 posts de LinkedIn para posicionarme y atraer tráfico a mi funnel de afiliado.\n\nMi ángulo: [ángulo de Kratos]\nAudiencia B2B: [perfil de Aura]\nTemas de autoridad: [tema 1], [tema 2], [tema 3]\n\n3 posts con hooks de alto impacto y CTA hacia la página puente. Primero autoridad, luego dirección.`,output_note:"3 posts listos para publicar. Si tu audiencia es B2C, omite este paso."},
+      {gem:"VentasFlow",title:"Secuencia de seguimiento y cierre",desc:"Flujo cronológico de WhatsApp desde primer contacto hasta cierre.",inputs:["Oferta y bono exclusivo de Kratos","Objeciones de Aura","Página puente de CopyMaster","Tu nombre y estilo de comunicación"],prompt:`Necesito la secuencia de seguimiento por WhatsApp para mi funnel de afiliado.\n\nProducto: [nombre y precio]\nMi bono exclusivo: [bono de Kratos]\nObjeciones frecuentes: [objeciones de Aura]\n\nDiseña: bienvenida/calificación, nurturing de valor, manejo de objeción principal, urgencia y cierre final. Listos para copiar y pegar.`,output_note:"Flujo completo de WhatsApp. Sistema de afiliado completo."}
+    ]
+  },
+  {
+    id:3, name:"Venta de productos físicos", steps_count:8,
+    problem:"Tu producto físico compite por precio porque no tiene diferenciación clara ni estrategia de contenido.",
+    result:"Marca posicionada con identidad visual, contenido orgánico constante y flujo de ventas por WhatsApp.",
+    kpis:{q:"CPA, tasa de recompra, ROAS de ads, tasa de respuesta WhatsApp.",c:"Reconocimiento de marca — te buscan por nombre, no por categoría."},
+    steps:[
+      {gem:"Aura",title:"Segmentación profunda",desc:"Identifica nichos invisibles y construye 2-3 Buyer Personas priorizadas por rentabilidad.",inputs:["Producto físico (nombre, categoría, precio)","Canal de venta actual","Rango de precio","Mejores clientes actuales"],prompt:`Necesito segmentación profunda para mi producto físico.\n\nProducto: [nombre y categoría]\nPrecio: [precio]\nCanal actual: [canal]\nMejores clientes actuales: [descripción]\n\nIdentifica nichos invisibles que la competencia ignora. Construye 2-3 Buyer Personas priorizadas por rentabilidad con triggers emocionales específicos.`,output_note:"Guarda el Buyer Persona #1 (mayor rentabilidad) — es el foco de toda la comunicación."},
+      {gem:"Kratos",title:"Diferenciación de producto",desc:"Elimina el lenguaje genérico y encuentra el beneficio tangible que importa.",inputs:["Producto con características o ingredientes","Buyer Personas de Aura","Competidores principales y sus mensajes","Tu proceso o ingrediente diferencial"],prompt:`Necesito diferenciar mi producto físico de la competencia.\n\nProducto: [nombre + características]\nBuyer Persona #1: [descripción de Aura]\nCompetidores y sus mensajes: [competidores]\nMi diferencial: [ingrediente o proceso único]\n\nElimina el lenguaje genérico. Encuentra el beneficio tangible que importa. PUV en 3 formatos: pitch, titular web, narrativa de marca.`,output_note:"Guarda el titular y la narrativa — los usa Brandon para la identidad y CopyMaster para el copy."},
+      {gem:"Brandon",title:"Identidad visual de marca",desc:"Diseña el sistema visual completo: colores, tipografía, personalidad y guía de estilo.",inputs:["PUV de Kratos","Buyer Persona #1 de Aura","Sentimiento que quieres evocar","Colores actuales o preferencias"],prompt:`Necesito diseñar la identidad visual de mi marca de producto físico.\n\nPUV: [titular de Kratos]\nAudiencia: [Buyer Persona de Aura]\nSentimiento deseado: [confianza / lujo / accesibilidad / natural / otro]\nPreferencias de color: [colores o restricciones]\n\nEntrega: paleta de colores (hex), tipografías recomendadas, personalidad de marca y guía de estilo básica.`,output_note:"Guarda el documento completo — es la referencia para todo el contenido visual."},
+      {gem:"Schwartz",title:"Calibración de mensaje por canal",desc:"Diagnostica el nivel de consciencia por canal para calibrar el gancho correcto en cada uno.",inputs:["Buyer Persona de Aura","Canales de venta activos","Si los clientes ya conocen el problema","Nivel de saturación del nicho"],prompt:`Necesito calibrar mi mensaje para cada canal de venta.\n\nBuyer Persona: [descripción de Aura]\nCanales activos: [lista de canales]\n¿Conocen el problema que resuelvo? [sí / no / parcialmente]\nNivel de saturación: [alto / medio / bajo]\n\nDiagnostica el nivel de consciencia por canal y entrega la matriz de ángulos: qué decir en cada canal.`,output_note:"Guarda los ganchos por canal — los usa CopyMaster y ReelPro para cada pieza."},
+      {gem:"CopyMaster",title:"Copy de producto y publicidad",desc:"Redacta fichas de producto, copy para ads y secuencia de emails para recompra.",inputs:["PUV de Kratos","Ángulos de Schwartz por canal","Identidad de marca de Brandon","Buyer Persona de Aura"],prompt:`Necesito el kit de copy para mi producto físico.\n\nPUV: [titular de Kratos]\nÁngulos por canal: [matrix de Schwartz]\nTono de marca: [personalidad de Brandon]\nBuyer Persona: [descripción de Aura]\n\nRedacta: 1) Ficha de producto para tienda online, 2) Copy para ad Facebook/Instagram (3 variantes), 3) Email de recompra para clientes existentes.`,output_note:"Guarda las 3 variantes de ad — las audita AdsAudit antes de publicar."},
+      {gem:"ReelPro",title:"Contenido de video para el producto",desc:"5 guiones: demostración, antes/después, testimonio, educativo y respuesta a objeción.",inputs:["Buyer Persona de Aura","PUV de Kratos","Ángulos de Schwartz","Objeción más frecuente"],prompt:`Necesito 5 guiones de Reels para mi producto físico.\n\nProducto: [nombre y beneficio principal]\nBuyer Persona: [descripción de Aura]\nPUV: [titular de Kratos]\nObjeción más frecuente: [objeción]\n\n5 guiones: demostración, antes/después, testimonio, educativo, respuesta a objeción. Formato tabla: Audio | Visual.`,output_note:"Guarda el guión de demostración y el de objeción — son los de mayor conversión."},
+      {gem:"VentasFlow",title:"Cierre por WhatsApp",desc:"Automatiza el flujo de venta desde el primer mensaje hasta el cierre.",inputs:["Oferta con precio y posibles bonos","Objeciones de Aura","Catálogo de productos","Canales de entrada de prospectos"],prompt:`Necesito el flujo de ventas por WhatsApp para mi producto físico.\n\nProducto(s): [catálogo con precios]\nObjeciones frecuentes: [objeciones]\nCanal de entrada: [Instagram DM / anuncio / referido / otro]\n\nDiseña el flujo: saludo y calificación, presentación, manejo de las 2 objeciones principales, cierre y confirmación. Listo para copiar o automatizar.`,output_note:"Secuencia de mensajes WhatsApp para el flujo de ventas."},
+      {gem:"AdsAudit",title:"Auditoría de creativos publicitarios",desc:"Evalúa cada pieza gráfica bajo la matriz de 6 pilares antes de invertir en publicidad.",inputs:["Piezas gráficas creadas para los ads","Copy de ads de CopyMaster","Canal de publicación","Objetivo del ad"],prompt:`Necesito auditoría de mis creativos publicitarios.\n\nCanal: [canal]\nObjetivo: [objetivo del ad]\nCopy disponible: [copy de CopyMaster]\n\nEvalúa bajo la Matriz de 6 Pilares: Scroll Stopping Power, Composición, Copywriting, Psicología, Claridad de oferta, CTA. Puntúa cada pilar y dame recomendaciones específicas de mejora.`,output_note:"Diagnóstico con puntuación por pilar. Sistema de producto físico completo."}
+    ]
+  },
+  {
+    id:4, name:"Venta de servicios profesionales", steps_count:10,
+    problem:"Eres consultor, coach o freelancer y dependes de referidos o compites por precio.",
+    result:"Marca personal posicionada en LinkedIn, oferta de alto ticket estructurada y sistema de captación activo.",
+    kpis:{q:"SSI de LinkedIn, llamadas agendadas/mes, tasa de cierre, ticket promedio.",c:"Inbound vs. Outbound — te buscan a ti vs. tú buscas clientes."},
+    steps:[
+      {gem:"MentorPro",title:"Diagnóstico profesional",desc:"Mapea tus brechas, fortalezas y objetivos estratégicos a 6-12 meses.",inputs:["Tu especialidad y años de experiencia","Habilidades donde produces resultados excepcionales","Tipo de clientes actuales","Ingresos actuales y meta a 12 meses"],prompt:`Soy [profesión] con [X] años de experiencia en [área].\n\nHabilidades donde destaco: [habilidades]\nClientes actuales: [tipo de cliente]\nIngresos actuales: [rango]. Meta a 12 meses: [meta]\nPrincipal fricción: [fricción]\n\nEjecuta tu Fase de Diagnóstico. Entrega: mapa de fortalezas, brechas identificadas y Plan Estratégico de Desarrollo.`,checkpoint:"¿Tienes claro qué problema específico resuelves mejor que la mayoría?",output_note:"Guarda las 3 fortalezas principales y el eje estratégico — son el input de Kenji."},
+      {gem:"Kenji",title:"Propósito y zona de genialidad",desc:"Valida que tu servicio esté alineado con tu propósito vital. Si hay desalineación, se ajusta aquí.",inputs:["Resultados de MentorPro (fortalezas y eje estratégico)","Actividades que haces con mayor fluidez natural","Problemas que resuelves mejor que otros","Lo que más disfrutas en tu trabajo"],prompt:`Quiero validar que mi servicio esté alineado con mi propósito.\n\nFortalezas de MentorPro: [fortalezas]\nEje estratégico: [eje]\nFluidez natural: [actividades]\nQué disfruto: [actividades]\n\nEjecuta el diagnóstico Ikigai y dime si hay alineación. Si hay desalineación, sugiere el ajuste antes de construir la marca.`,output_note:"Guarda tu zona de genialidad — la usa Aura para el Buyer Persona B2B."},
+      {gem:"Aura",title:"Audiencia y dolores críticos",desc:"Define el cliente ideal de servicios: tomador de decisiones, presupuesto disponible, urgencia.",inputs:["Servicio definido","Ikigai y zona de genialidad de Kenji","Resultados concretos que produces","Industria o nicho de enfoque"],prompt:`Necesito el Buyer Persona B2B/B2C para mis servicios profesionales.\n\nServicio: [descripción]\nMi zona de genialidad: [de Kenji]\nResultados que produzco: [resultados concretos]\nNicho: [industria]\n\nBuyer Persona con: tomador de decisiones, presupuesto disponible, urgencia del problema. Arquitectura de objeciones para servicios de alto ticket.`,output_note:"Guarda el dolor más urgente y las 3 objeciones principales — son el input de Kratos."},
+      {gem:"Kratos",title:"Propuesta única de valor como profesional",desc:"No 'soy coach certificado' — el resultado específico que produces, con métrica y tiempo.",inputs:["Buyer Persona de Aura","Objeciones principales","Tu mecanismo diferencial","Un resultado concreto con cliente real (con números)"],prompt:`Necesito construir mi PUV como profesional de servicios.\n\nBuyer Persona: [perfil de Aura]\nDolor más urgente: [dolor de Aura]\nMi mecanismo: [cómo lo hago yo]\nResultado real: [resultado + tiempo]\n\nFormato objetivo: "Ayudo a [perfil exacto] a [resultado con métrica] en [tiempo] mediante [mecanismo]". Sin jerga, sin "certificado", sin "apasionado". 3 variaciones.`,checkpoint:"¿Alguien externo entiende qué vendes y a quién en 5 segundos?",output_note:"Guarda el formato 'Ayudo a...' — es el eje de LinkedIn, la landing y la oferta."},
+      {gem:"Alex",title:"Oferta de alto ticket",desc:"Estructura la oferta con resultado prometido, entregables, bonos, garantía y precio justificado.",inputs:["PUV de Kratos","Descripción detallada del servicio y entregables","Precio actual o precio objetivo","Garantía que estarías dispuesto a ofrecer"],prompt:`Necesito estructurar mi oferta de alto ticket.\n\nPUV: [PUV de Kratos]\nServicio: [descripción detallada]\nEntregables: [lista completa]\nPrecio objetivo: [precio]\n\nAplica el framework de Hormozi: resultado soñado, probabilidad de logro, reducción de tiempo y esfuerzo, bonos estratégicos y garantía. Justifica el precio con la ecuación de valor.`,output_note:"Guarda el stack completo y la garantía — los usa LandingPro."},
+      {gem:"Brandlink",title:"Perfil de LinkedIn como herramienta de conversión",desc:"Transforma tu LinkedIn de currículum a imán de prospectos de alto ticket.",inputs:["PUV de Kratos","Buyer Persona de Aura","Ikigai y zona de genialidad de Kenji","3 logros concretos con números"],prompt:`Necesito optimizar mi perfil de LinkedIn para atraer clientes de alto ticket.\n\nPUV: [PUV de Kratos]\nAudiencia objetivo: [Buyer Persona de Aura]\nZona de genialidad: [de Kenji]\nLogros concretos: [logro 1 con métrica], [logro 2], [logro 3]\n\nFramework UVP Architect™: titular de impacto (máx 220 caracteres), estructura del "Acerca de", experiencia alineada con el mensaje y KPIs de medición.`,output_note:"Guarda el titular — lo usa Copylink como referencia de voz y posicionamiento."},
+      {gem:"Copylink",title:"Contenido de autoridad para LinkedIn",desc:"12 posts para el primer mes: caso de éxito, lección, framework propio, opinión contraintuitiva.",inputs:["PUV de Kratos","Titular LinkedIn de Brandlink","Buyer Persona de Aura","3-5 temas de autoridad de tu área"],prompt:`Necesito 12 posts de LinkedIn para el primer mes.\n\nMi PUV: [de Kratos]\nTitular LinkedIn: [de Brandlink]\nAudiencia: [Buyer Persona de Aura]\nTemas de autoridad: [lista]\n\nCalendario de 12 posts alternando: caso de éxito, lección aprendida, framework propio, opinión contraintuitiva. 3 opciones de hook por post + el post completo con el hook más fuerte.`,output_note:"Guarda los 3 posts de mayor potencial — publícalos primero para medir engagement."},
+      {gem:"LandingPro",title:"Landing de captación de leads",desc:"Página enfocada en agendar llamadas de descubrimiento o descargar un lead magnet.",inputs:["Oferta Grand Slam de Alex","PUV de Kratos","Buyer Persona con objeciones de Aura","CTA objetivo: agendar llamada o lead magnet"],prompt:`Necesito la landing page para captar leads para mis servicios.\n\nPUV: [de Kratos]\nOferta: [de Alex]\nBuyer Persona: [de Aura]\nObjeciones principales: [de Aura]\nCTA objetivo: [agendar llamada / descargar lead magnet]\n\nCopy completo sección por sección. Espera mi validación antes de avanzar a cada sección.`,output_note:"Guarda el CTA exacto y la sección de beneficios — los usa VentasFlow."},
+      {gem:"SalesSim",title:"Entrenamiento de cierre",desc:"Practica con clientes simulados: escéptico, indeciso y agresivo antes de la llamada real.",inputs:["Descripción del servicio y precio (de Alex)","Las 3 objeciones principales de Aura","Canal de venta: llamada o WhatsApp","Nivel de dificultad deseado"],prompt:`Quiero entrenar mi cierre de ventas para servicios de alto ticket.\n\nServicio: [nombre y precio de Alex]\nObjeciones más frecuentes: [de Aura]\nCanal: [llamada de Zoom / WhatsApp / DM LinkedIn]\nDificultad: [media / alta]\n\nSé el prospecto más escéptico posible. Simula objeciones reales de alto ticket. Al terminar, dame puntuación y áreas de mejora específicas.`,output_note:"Guarda las respuestas que funcionaron — las integra VentasFlow en los guiones de seguimiento."},
+      {gem:"VentasFlow",title:"Seguimiento post-llamada WhatsApp",desc:"Secuencias diferenciadas para prospecto caliente, tibio y frío.",inputs:["Oferta Grand Slam de Alex","Escenarios post-llamada de SalesSim","CTA de la landing de LandingPro","Tu nombre y estilo de comunicación"],prompt:`Necesito 3 secuencias de seguimiento por WhatsApp post-llamada.\n\nServicio: [nombre y precio]\nGarantía y bonos: [de Alex]\nRespuestas que funcionan: [insights de SalesSim]\n\n3 flujos: 1) Prospecto caliente (interesado pero no cerró), 2) Prospecto tibio (pidió tiempo), 3) Prospecto frío (dejó de responder — seguimiento a los 3 días). Con timing recomendado.`,output_note:"3 secuencias WhatsApp (caliente, tibio, frío). Sistema de servicios profesionales completo."}
+    ]
+  },
+  {
+    id:5, name:"Marca personal desde cero", steps_count:9,
+    problem:"Tienes conocimiento y experiencia pero eres invisible digitalmente.",
+    result:"Marca personal definida con identidad visual, perfil optimizado, ecosistema de contenido y primeros leads.",
+    kpis:{q:"Seguidores cualificados/mes, impresiones de perfil LinkedIn, engagement rate.",c:"Mensajes entrantes de prospectos sin haberlos buscado."},
+    steps:[
+      {gem:"Kenji",title:"Propósito y tema central",desc:"Descubre tu Ikigai y define el tema central de tu marca personal.",inputs:["Tu historia profesional y años de experiencia","Pasiones e intereses que se cruzan con tu trabajo","Habilidades donde produces resultados mejores que el promedio","Tipo de monetización deseada"],prompt:`Quiero construir mi marca personal y necesito encontrar mi Ikigai.\n\nHistoria profesional: [resumen]\nPasiones: [lista]\nHabilidades top: [lista]\nMonetización deseada: [tipo]\n\nFacilita el proceso con diálogo socrático. Al final entrega: Ikigai definido y tema central de la marca.`,output_note:"Guarda el tema y la intersección de los 4 círculos — son el input de Aura."},
+      {gem:"Aura",title:"Audiencia objetivo",desc:"Identifica a quién le hablas, qué les importa y qué los mueve a actuar.",inputs:["Tema central de Kenji","Tipo de monetización deseada","Personas que ya te siguen (si tienes)","Plataforma principal de distribución"],prompt:`Necesito identificar mi audiencia para mi marca personal.\n\nTema central: [de Kenji]\nMonetización deseada: [tipo]\nPlataforma principal: [LinkedIn / Instagram / YouTube]\n\nBuyer Persona + mapa de dolores, deseos y objeciones. Prioriza el perfil con mayor potencial según la monetización elegida.`,output_note:"Guarda el dolor principal — lo usa Kratos para el mensaje central."},
+      {gem:"Kratos",title:"Mensaje central y PUV personal",desc:"Construye tu bio profesional, elevator pitch y mensaje de posicionamiento.",inputs:["Ikigai de Kenji","Buyer Persona de Aura","Tu mecanismo o enfoque único","Un resultado concreto que hayas producido"],prompt:`Necesito construir el mensaje central de mi marca personal.\n\nMi Ikigai: [de Kenji]\nAudiencia y dolor: [de Aura]\nMi enfoque único: [mecanismo o perspectiva propia]\nResultado concreto: [resultado]\n\nEntrega: PUV personal, bio profesional (corta 50 palabras y larga 150 palabras) y elevator pitch conversacional.`,output_note:"Guarda la bio larga y el elevator pitch — los usa Brandon y Brandlink."},
+      {gem:"Brandon",title:"Identidad visual personal",desc:"Diseña tu paleta, tipografía, personalidad visual y guía de estilo.",inputs:["PUV personal de Kratos","Buyer Persona de Aura","Sentimiento que quieres evocar en tu audiencia","Referentes visuales que te gustan (opcional)"],prompt:`Necesito diseñar mi identidad visual como marca personal.\n\nPUV: [de Kratos]\nAudiencia: [de Aura]\nSentimiento deseado: [confianza / innovación / cercanía / autoridad / otro]\nReferentes: [opcional]\n\nEntrega: paleta de colores (hex), tipografías, personalidad visual (3-5 adjetivos) y guía de estilo para redes.`,output_note:"Guarda el documento completo — es la referencia para Pixel y todo el contenido visual."},
+      {gem:"Brandlink",title:"Optimización de LinkedIn",desc:"Transforma tu perfil en tu activo digital más poderoso.",inputs:["PUV personal de Kratos","Identidad visual de Brandon","Buyer Persona de Aura","3 logros relevantes de tu carrera"],prompt:`Necesito optimizar mi perfil de LinkedIn para mi marca personal.\n\nPUV: [de Kratos]\nAudiencia: [de Aura]\nLogros: [logro 1], [logro 2], [logro 3]\n\nFramework UVP Architect™ completo: titular (máx 220 caracteres), "Acerca de" persuasivo, coherencia en experiencia y KPIs de éxito.`,output_note:"Guarda el titular — lo usa Copylink como referencia de tono y posicionamiento."},
+      {gem:"Copylink",title:"Posts de autoridad para LinkedIn",desc:"12 posts del primer mes posicionándote como referente en tu tema.",inputs:["PUV personal de Kratos","Titular LinkedIn de Brandlink","Buyer Persona de Aura","5 temas sobre los que tienes perspectiva propia"],prompt:`Necesito 12 posts de LinkedIn para construir mi autoridad en [tema].\n\nMi PUV: [de Kratos]\nAudiencia: [de Aura]\nTemas con perspectiva propia: [lista]\n\nAlterna: historia personal + aprendizaje, framework propio, opinión contraintuitiva, caso de éxito, consejo accionable. Hook + post completo para cada uno.`,output_note:"Guarda los hooks más fuertes — los adapta ReelPro para video."},
+      {gem:"ReelPro",title:"Guiones de video para posicionamiento",desc:"5 guiones de Reels para posicionar tu expertise en Instagram o TikTok.",inputs:["PUV personal de Kratos","Temas de autoridad (de Copylink)","Buyer Persona de Aura","Plataforma principal: Instagram o TikTok"],prompt:`Necesito 5 guiones de Reels para posicionar mi marca personal.\n\nTema central: [de Kenji]\nPUV: [de Kratos]\nAudiencia: [de Aura]\nPlataforma: [Instagram / TikTok]\n\n5 guiones: historia y por qué hago esto, error más común de mi audiencia, framework propio, antes/después, respuesta a objeción frecuente. Formato tabla: Audio | Visual.`,output_note:"Guarda el guión de historia personal — es el de mayor conexión emocional."},
+      {gem:"Pixel",title:"Prompts para imágenes de marca",desc:"Genera prompts optimizados para crear imágenes coherentes con tu identidad visual.",inputs:["Guía de estilo de Brandon","Temas de contenido principales","Tipos de imagen necesarios (portadas, posts, thumbnails)","Herramienta de generación que usas"],prompt:`Necesito prompts para generar imágenes coherentes con mi marca personal.\n\nPaleta de colores: [de Brandon]\nPersonalidad visual: [de Brandon]\nTipos de imagen: [portadas LinkedIn / posts Instagram / thumbnails YouTube]\nHerramienta: [Midjourney / DALL-E / Firefly / otra]\n\nPrompts optimizados para cada tipo de imagen con variaciones de estilo.`,output_note:"Guarda los prompts — úsalos cada vez que necesites crear contenido visual coherente."},
+      {gem:"HumanText",title:"Humanización del contenido",desc:"Elimina el rastro de IA en todo el contenido generado y añade tu voz propia.",inputs:["Todo el contenido generado por los Gems anteriores","Un texto tuyo como referencia de voz","Muletillas o frases que usas normalmente","Lo que NO quieres que suene tu contenido"],prompt:`Necesito humanizar el contenido generado por IA para que suene como yo.\n\nMi voz natural (texto de referencia): [pega un texto tuyo]\nFrases que uso: [muletillas propias]\nLo que no quiero: [características que NO quiero]\n\nAudita este contenido: [pega el contenido]. Elimina muletillas de IA, añade ritmo natural y el factor humano. Listo para publicar.`,output_note:"Contenido final con voz propia listo para publicar. Sistema de marca personal completo."}
+    ]
+  },
+  {
+    id:6, name:"Máquina de contenido multicanal", steps_count:8,
+    problem:"Necesitas producir contenido constante para múltiples plataformas pero no tienes tiempo ni sistema.",
+    result:"Pipeline de contenido semanal con LinkedIn, Reels, YouTube y emails alineados con tu PUV.",
+    kpis:{q:"Piezas producidas/semana, engagement rate por plataforma, crecimiento de audiencia.",c:"Consistencia de voz y mensaje a través de canales."},
+    steps:[
+      {gem:"Schwartz",title:"Ángulos de contenido semanales",desc:"Define 3-5 ángulos para la semana calibrados al nivel de consciencia de tu audiencia.",inputs:["Tu PUV o mensaje central","Plataformas activas","Nivel de consciencia actual de tu audiencia","Objetivo de la semana: autoridad, leads, conversión o nutrición"],prompt:`Necesito los ángulos de contenido para esta semana.\n\nMi PUV: [mensaje central]\nPlataformas: [lista]\nNivel de consciencia de mi audiencia: [nivel]\nObjetivo esta semana: [autoridad / leads / conversión / nutrición]\n\n3-5 ángulos con hook principal para cada uno y plataforma recomendada. Calibrado al nivel de consciencia correcto.`,output_note:"Guarda la lista completa — es el brief creativo para todos los Gems de producción."},
+      {gem:"Cronos",title:"Calendario editorial semanal",desc:"Asigna bloques de tiempo para producción, auditoría y publicación.",inputs:["Lista de ángulos de Schwartz","Número de piezas a producir","Horas disponibles para producción","Días y horarios de publicación por plataforma"],prompt:`Necesito el calendario editorial de esta semana.\n\nÁngulos de Schwartz: [lista]\nPiezas a producir: [número y tipo]\nHoras disponibles: [horas/día]\nPublicación: [días y horarios por plataforma]\n\nTabla Maestra semanal: Lunes planificación, Martes-Miércoles producción, Jueves auditoría, Viernes publicación. Exportable a Google Sheets.`,output_note:"Guarda el calendario — es tu guía de ejecución para el resto de los Gems."},
+      {gem:"Copylink",title:"Posts de LinkedIn",desc:"3 posts de alto impacto usando los ángulos definidos por Schwartz.",inputs:["Ángulos de Schwartz asignados a LinkedIn","Tu PUV y titular","Buyer Persona objetivo","Temas específicos de cada post"],prompt:`Necesito 3 posts de LinkedIn para esta semana.\n\nÁngulos: [ángulos de Schwartz para LinkedIn]\nMi PUV: [mensaje central]\nAudiencia: [Buyer Persona]\n\nPara cada post: 3 opciones de hook, el post completo con el hook más fuerte y CTA específico.`,output_note:"Pasa los posts a HumanText antes de publicar."},
+      {gem:"ReelPro",title:"Guiones de Reels/TikTok/Shorts",desc:"3 guiones técnicos con hook, retención alta y CTA.",inputs:["Ángulos de Schwartz para video","Buyer Persona objetivo","Plataforma: Instagram, TikTok o YouTube Shorts","Estilo de grabación"],prompt:`Necesito 3 guiones de video corto para esta semana.\n\nÁngulos: [ángulos de Schwartz para video]\nPlataforma: [plataforma]\nAudiencia: [Buyer Persona]\nEstilo: [a cámara / voz en off / texto en pantalla]\n\n3 guiones con hook de los primeros 3 segundos, cuerpo de alta retención y CTA. Tabla: Audio | Visual | Notas de edición.`,output_note:"Pasa los guiones a ReelAudit antes de grabar."},
+      {gem:"SeoVid",title:"Descripción de YouTube",desc:"Descripción optimizada para SEO y conversión si YouTube es uno de tus canales.",inputs:["Título del video de YouTube","Tema y puntos principales del video","Palabras clave del nicho","CTA del video"],prompt:`Necesito la descripción optimizada para mi video de YouTube.\n\nTítulo: [título del video]\nTema: [tema principal]\nPuntos clave: [lista]\nPalabras clave: [keywords]\nCTA: [acción deseada]\n\nDescripción con: gancho en las primeras 2 líneas, desarrollo con palabras clave, timestamps, CTA y etiquetas recomendadas.`,output_note:"Pasa por HumanText antes de publicar."},
+      {gem:"CopyMaster",title:"Email o newsletter de la semana",desc:"Email semanal alineado con los ángulos de contenido.",inputs:["Ángulo de Schwartz para email","Buyer Persona objetivo","Objetivo del email: nurturing, oferta o contenido de valor","Tu firma o estilo de cierre habitual"],prompt:`Necesito el email/newsletter de esta semana.\n\nÁngulo: [ángulo de Schwartz para email]\nAudiencia: [Buyer Persona]\nObjetivo: [nurturing / oferta / contenido de valor]\n\n3 opciones de asunto. Email con: asunto de alta apertura, hook en el primer párrafo, cuerpo de valor, CTA y cierre natural. Tono conversacional.`,output_note:"Pasa por HumanText antes de enviar."},
+      {gem:"ReelAudit",title:"Auditoría de guiones antes de grabar",desc:"Evalúa cada guión bajo la matriz Hook/Content/CTA. Graba solo los que pasan.",inputs:["Guiones de ReelPro","Plataforma de publicación","Métricas de videos anteriores (si tienes)","Objetivo de cada video"],prompt:`Necesito auditoría de estos guiones antes de grabar.\n\nPlataforma: [plataforma]\nObjetivo: [objetivo]\n\nPor cada guión evalúa: 1) ¿Hook detiene el scroll en 3 segundos? 2) ¿Retiene hasta el final? 3) ¿CTA genera la acción deseada? Puntuación 1-10 y reescritura de los puntos débiles.`,output_note:"Guiones auditados con versiones mejoradas. Graba después de la auditoría."},
+      {gem:"HumanText",title:"Humanización de todo el contenido",desc:"Audita y corrige todas las piezas para eliminar rastro de IA antes de publicar.",inputs:["Todo el contenido generado esta semana","Un texto tuyo como referencia de voz","Muletillas de IA que quieres eliminar","Tono deseado por plataforma"],prompt:`Necesito humanizar el contenido de esta semana.\n\nMi voz natural: [texto propio]\nContenido a humanizar: [pega cada pieza]\n\nPor cada pieza: elimina muletillas de IA, añade ritmo natural y 1 elemento humano (anécdota, error real, opinión directa). Listo para publicar.`,output_note:"Todo el contenido de la semana humanizado. Pipeline semanal completo."}
+    ]
+  },
+  {
+    id:7, name:"Lanzamiento de curso online", steps_count:11,
+    problem:"Quieres lanzar un curso pero no sabes cómo validar, estructurar ni diseñar el lanzamiento.",
+    result:"Curso estructurado + landing + VSL + estrategia de 7 días de pre-lanzamiento + secuencia de cierre.",
+    kpis:{q:"Ventas en las primeras 72h, tasa de conversión de landing, tasa de respuesta WhatsApp.",c:"Claridad del viaje de transformación — cada módulo tiene competencia medible."},
+    steps:[
+      {gem:"Aura",title:"Validación de demanda y alumno ideal",desc:"Valida que hay demanda real antes de crear el curso. Construye el perfil del alumno ideal.",inputs:["Tema del curso","Resultado principal que el alumno obtendrá","Audiencia probable","Precio objetivo del curso"],prompt:`Quiero validar la demanda de mi curso antes de crearlo.\n\nTema: [tema]\nResultado principal: [transformación del alumno]\nAudiencia probable: [descripción]\nPrecio objetivo: [precio]\n\nValida la demanda y construye el Buyer Persona del alumno con: dolor que lo trae al curso, objeciones hacia cursos online, nivel de conocimiento previo y expectativas.`,checkpoint:"¿Hay demanda comprobable y puedes describir el dolor del alumno sin jerga?",output_note:"Guarda el dolor principal y las objeciones — los usa Kratos y LandingPro."},
+      {gem:"Lexis",title:"Investigación del estado del arte",desc:"Investiga el ecosistema para diferenciar el currículum de la competencia.",inputs:["Tema del curso","Buyer Persona de Aura","Cursos competidores principales","Vacíos o enfoques no explotados"],prompt:`Necesito investigar el estado del arte de [tema] para diferenciar mi curso.\n\nBuyer Persona: [de Aura]\nCompetidores: [lista]\nPrecio de mercado: [rango]\n\nQué enseñan los cursos existentes, qué vacíos dejan, datos que apoyan la necesidad del tema, y ángulo diferenciador para mi currículum.`,output_note:"Guarda los vacíos del mercado — son el diferenciador de ProductMaster."},
+      {gem:"ProductMaster",title:"Estructura del curso",desc:"Diseña los módulos, viaje de transformación y competencias por módulo.",inputs:["Buyer Persona de Aura","Vacíos del mercado de Lexis","Resultado final prometido","Duración aproximada del curso"],prompt:`Necesito diseñar la estructura de mi curso online.\n\nBuyer Persona: [de Aura]\nDiferenciador: [vacíos de Lexis]\nResultado final: [transformación]\nDuración objetivo: [semanas / horas]\n\nMódulos con objetivos de aprendizaje específicos, viaje de transformación, competencias medibles por módulo y evaluaciones intermedias. Cada módulo resuelve un problema concreto del alumno.`,checkpoint:"¿Cada módulo tiene una competencia medible y resuelve un problema concreto?",output_note:"Guarda el índice de módulos — input de Kratos para la PUV."},
+      {gem:"Kratos",title:"PUV del curso vs. competencia",desc:"Construye el mensaje que diferencia tu curso de todo lo demás disponible.",inputs:["Estructura del curso de ProductMaster","Buyer Persona con objeciones de Aura","Vacíos del mercado de Lexis","Tu experiencia y credenciales relevantes"],prompt:`Necesito la PUV de mi curso que lo diferencie de la competencia.\n\nMi curso: [nombre y estructura]\nBuyer Persona: [de Aura]\nVacíos que cubro: [de Lexis]\nMi credencial: [experiencia relevante]\n\nPUV en 3 formatos: titular que destaque el diferenciador real, pitch de venta y narrativa persuasiva.`,output_note:"Guarda el titular — es el núcleo de la landing y el VSL."},
+      {gem:"Alex",title:"Oferta Grand Slam del curso",desc:"Estructura el curso como oferta irresistible con bonos, garantía y precio justificado.",inputs:["PUV de Kratos","Módulos del curso (de ProductMaster)","Precio objetivo","Bonos posibles: comunidad, sesiones, plantillas"],prompt:`Necesito la Oferta Grand Slam para mi curso online.\n\nCurso: [nombre y módulos]\nPUV: [de Kratos]\nPrecio objetivo: [precio]\nBonos disponibles: [lista]\n\nHormozi: maximiza resultado soñado y probabilidad de logro, reduce tiempo y esfuerzo, estructura bonos estratégicos, garantía y nombre final.`,output_note:"Guarda el stack completo — lo usa LandingPro."},
+      {gem:"LandingPro",title:"Página de ventas del curso",desc:"Copy completo sección por sección con psicología de conversión.",inputs:["Oferta Grand Slam de Alex","PUV de Kratos","Buyer Persona con objeciones de Aura","Testimonios o resultados de beta testers"],prompt:`Necesito la página de ventas de mi curso.\n\nPUV: [de Kratos]\nOferta: [de Alex]\nBuyer Persona: [de Aura]\nObjeciones: [lista]\nPrueba social: [testimonios]\n\nSección por sección: titular, promesa de transformación, agitación del problema, solución, currículum, quién soy, prueba social, FAQ, oferta y CTA. Valida entre secciones.`,output_note:"Guarda la sección de currículum y el CTA — los usa VSLMaster."},
+      {gem:"VSLMaster",title:"Guión del video de ventas",desc:"VSL que convierte visitantes de la landing en compradores.",inputs:["Copy de la landing de LandingPro","Buyer Persona de Aura","Tu historia de por qué creaste el curso","Prueba social disponible"],prompt:`Necesito el guión del Video Sales Letter para mi curso.\n\nLanding: [resumen de LandingPro]\nBuyer Persona: [de Aura]\nMi historia: [por qué creé este curso]\nPrueba social: [testimonios]\n\nEstructura: hook que identifique el dolor, historia de transformación, solución y mecanismo, currículum, prueba social, oferta con bonos, garantía, urgencia, CTA.`,output_note:"Guarda el hook de apertura — úsalo en los Reels de pre-lanzamiento."},
+      {gem:"CopyMaster",title:"Secuencia de emails de lanzamiento",desc:"Emails de pre-lanzamiento y apertura de carrito.",inputs:["Oferta Grand Slam de Alex","Buyer Persona de Aura","Fechas del lanzamiento","Lista de emails disponible"],prompt:`Necesito la secuencia de emails para el lanzamiento de mi curso.\n\nCurso: [nombre y oferta]\nBuyer Persona: [de Aura]\nPre-lanzamiento: [fecha inicio]\nApertura de carrito: [fecha]\nCierre: [fecha]\n\n3 emails de pre-lanzamiento (expectativa), email de apertura, 2 de nurturing, email de urgencia (24h antes del cierre) y email de cierre final.`,output_note:"Guarda el email de apertura y el de urgencia — son los de mayor conversión."},
+      {gem:"ReelPro",title:"Contenido de pre-lanzamiento",desc:"5 Reels para generar demanda latente antes de abrir el carrito.",inputs:["Tema del curso y PUV de Kratos","Buyer Persona de Aura","Fecha de apertura de carrito","Plataforma"],prompt:`Necesito 5 Reels de pre-lanzamiento para generar expectativa antes de abrir carrito.\n\nCurso: [nombre y promesa]\nAudiencia: [de Aura]\nFecha de apertura: [fecha]\nPlataforma: [plataforma]\n\n5 guiones de la semana previa: contenido de valor sobre el tema, sin venta directa. El carrito se menciona solo en el último Reel del día de apertura.`,output_note:"El lanzamiento empieza aquí, no cuando abres el carrito."},
+      {gem:"VentasFlow",title:"Secuencia de cierre WhatsApp",desc:"Flujo de WhatsApp desde apertura hasta cierre de carrito.",inputs:["Oferta Grand Slam de Alex","Objeciones de Aura","Fechas de apertura y cierre de carrito","Tu lista o canal de WhatsApp"],prompt:`Necesito la secuencia de cierre por WhatsApp para el lanzamiento.\n\nCurso: [nombre y precio]\nCarrito abierto: [fecha]\nCierre: [fecha]\nObjeciones frecuentes: [de Aura]\n\nApertura de carrito, seguimiento de valor (24h después), objeción principal, urgencia (12h antes del cierre) y cierre final. Listos para copiar.`,output_note:"Secuencia completa de WhatsApp para el lanzamiento."},
+      {gem:"Cronos",title:"Calendario del lanzamiento",desc:"Todo el lanzamiento en un calendario ejecutable con bloques de tiempo.",inputs:["Todos los entregables completados","Fecha objetivo de lanzamiento","Horas disponibles por día","Compromisos fijos"],prompt:`Necesito el calendario completo del lanzamiento de mi curso.\n\nEntregables listos: [lista]\nPendientes: [lista]\nFecha de lanzamiento: [fecha]\nHoras disponibles: [horas/día]\n\nCalendario: semana de pre-lanzamiento, día de apertura, días de carrito abierto, día de cierre. Exportable a Google Sheets.`,output_note:"Calendario ejecutable del lanzamiento. Sistema de curso completo."}
+    ]
+  },
+  {
+    id:8, name:"Auditoría y optimización de funnel", steps_count:8,
+    problem:"Ya tienes un funnel pero las conversiones son bajas y no sabes dónde está la fuga.",
+    result:"Diagnóstico preciso de cada punto de fuga + assets reescritos y optimizados.",
+    kpis:{q:"Mejora en tasa de conversión pre/post, reducción de CPA, incremento en CTR.",c:"Reducción de objeciones no resueltas en conversaciones de venta."},
+    steps:[
+      {gem:"Schwartz",title:"Re-diagnóstico de consciencia",desc:"El error más común no es el copy — es hablarle al nivel equivocado de consciencia.",inputs:["Descripción de tu oferta actual","Canal de entrada de prospectos","Audiencia actual vs. audiencia ideal","Tasas de conversión actuales por etapa"],prompt:`Necesito re-diagnosticar el nivel de consciencia de mi audiencia.\n\nMi oferta: [descripción]\nCanal de entrada: [canal]\nMi mensaje actual: [copy o mensaje actual]\nTasa de conversión: [tasa]\n\n¿El mensaje está calibrado al nivel real de la audiencia? ¿Hay desalineación? ¿En qué punto del funnel ocurre?`,checkpoint:"¿El diagnóstico revela desalineación? Si sí, esto explica la fuga principal.",output_note:"Guarda el diagnóstico — dirige toda la reescritura que sigue."},
+      {gem:"AdsAudit",title:"Auditoría de creativos",desc:"Evalúa cada anuncio para encontrar el pilar débil.",inputs:["Piezas gráficas de los anuncios","Copy de los anuncios","Canal y objetivo","CTR y tasa de conversión actuales"],prompt:`Necesito auditoría de mis anuncios actuales.\n\nCanal: [canal]\nCTR actual: [CTR]\nCopy: [copy]\n\nMatriz de 6 Pilares: Scroll Stopping Power, Composición, Copywriting, Psicología, Claridad de oferta, CTA. Identifica el pilar con menor puntuación — ese es el punto de fuga principal.`,output_note:"Guarda el pilar más débil — CopyMaster lo reescribe primero."},
+      {gem:"ReelAudit",title:"Auditoría de contenido de video",desc:"Evalúa los videos bajo Hook/Content/CTA para encontrar dónde se pierde la audiencia.",inputs:["Guiones o transcripciones de videos","Métricas de retención","Plataforma","Objetivo de cada video"],prompt:`Necesito auditoría de mis videos actuales.\n\nPlataforma: [plataforma]\nRetención promedio: [%]\nObjetivo: [objetivo]\n\nMatriz Hook/Content/CTA. ¿En qué segundo se pierde la audiencia y por qué?`,output_note:"Guarda el diagnóstico — ReelPro reescribe con esta información."},
+      {gem:"CopyMaster",title:"Reescritura de copy",desc:"Reescribe landing, emails y CTAs basado en los diagnósticos.",inputs:["Diagnóstico de Schwartz","Diagnóstico de AdsAudit (pilar débil)","Copy actual de landing y emails","Objeciones no resueltas"],prompt:`Necesito reescribir el copy de mi funnel basado en los diagnósticos.\n\nDesalineación identificada (Schwartz): [diagnóstico]\nPilar débil (AdsAudit): [pilar]\nCopy actual: [copy]\nObjeciones no resueltas: [lista]\n\nReescribe calibrado al nivel de consciencia correcto. Prioriza: titular de landing, primeros 3 párrafos, CTAs, copy del anuncio principal.`,output_note:"Guarda el nuevo titular y los CTAs — Kratos los revisa si hay cambio de PUV."},
+      {gem:"Kratos",title:"Recalibración de la PUV",desc:"Revisa si el problema de conversión está en el posicionamiento, no solo en el copy.",inputs:["PUV actual","Diagnóstico de Schwartz","Copy reescrito de CopyMaster","Feedback de clientes que no compraron"],prompt:`Necesito recalibrar mi PUV. El funnel no convierte y quiero revisar el posicionamiento.\n\nPUV actual: [PUV]\nDiagnóstico de consciencia: [de Schwartz]\nFeedback de no-compradores: [razones]\n\n¿La PUV habla al nivel correcto? ¿El diferenciador es real o genérico? ¿Es suficientemente específica? Recalibra si es necesario.`,output_note:"Si cambió la PUV, actualiza el copy de CopyMaster con la nueva versión."},
+      {gem:"Alex",title:"Reestructuración de la oferta",desc:"Reestructura si el problema es de valor percibido, no de mensaje.",inputs:["Oferta actual con precio y entregables","Diagnóstico de Schwartz","Feedback de prospectos sobre precio","Competidores y sus ofertas"],prompt:`Necesito revisar si el problema de conversión está en la oferta.\n\nOferta actual: [descripción con precio]\nFeedback de prospectos: [objeciones sobre precio/valor]\nCompetidores: [ofertas similares y precios]\n\nEvalúa la ecuación de valor: ¿el precio está justificado? ¿Faltan bonos? ¿La garantía es suficientemente fuerte? Reestructura donde sea necesario.`,output_note:"Guarda los cambios en bonos y garantía — los integra LandingPro en el copy final."},
+      {gem:"HumanText",title:"Humanización del copy reescrito",desc:"Elimina el rastro de IA en el copy reescrito antes de publicar.",inputs:["Copy reescrito de CopyMaster","Tu estilo de escritura natural","Tono de la marca","Plataforma de publicación"],prompt:`Necesito humanizar el copy reescrito antes de publicarlo.\n\nMi voz natural: [texto propio]\nTono de marca: [descripción]\nCopy a humanizar: [pega el copy]\n\nElimina muletillas de IA, añade ritmo natural y 1 elemento humano por sección. Que suene como yo escribiendo en un buen día.`,output_note:"Copy humanizado listo para publicar."},
+      {gem:"SalesSim",title:"Testing de objeciones reales",desc:"Valida que los cambios resuelven las objeciones que el funnel no estaba resolviendo.",inputs:["Oferta reestructurada de Alex","Objeciones no resueltas del diagnóstico","Canal de cierre","Copy nuevo de CopyMaster"],prompt:`Necesito validar que los cambios en el funnel resuelven las objeciones reales.\n\nOferta actualizada: [de Alex]\nObjeciones que no se resolvían antes: [lista]\nCanal: [canal]\n\nSimula al prospecto con esas objeciones específicas. ¿El nuevo copy y la nueva oferta las resuelven? Puntuación antes/después y qué queda sin resolver.`,output_note:"Si quedan objeciones sin resolver, regresa a CopyMaster con esa información. Sistema de auditoría completo."}
+    ]
+  },
+  {
+    id:9, name:"Agencia o freelancer de marketing", steps_count:9,
+    problem:"Cada cliente te consume tiempo en investigación y producción. No tienes proceso replicable.",
+    result:"Metodología estandarizada desde onboarding hasta entrega de assets — con los Gems como equipo virtual.",
+    kpis:{q:"Tiempo promedio de onboarding a entrega, clientes activos simultáneos, margen por cliente.",c:"Consistencia de calidad entre clientes — el nuevo recibe el mismo nivel que el antiguo."},
+    steps:[
+      {gem:"Aura",title:"Brief estratégico del cliente",desc:"Construye el Buyer Persona real del cliente de tu cliente (puede diferir de lo que tu cliente cree).",inputs:["Descripción del negocio del cliente","Producto o servicio del cliente con precio","Audiencia que el cliente cree que tiene","Canal de ventas actual"],prompt:`Soy agencia/freelancer y necesito el brief estratégico de mi cliente.\n\nNegocio del cliente: [descripción]\nProducto/servicio: [con precio]\nAudiencia que dicen tener: [descripción]\nCanal actual: [canal]\n\nBuyer Persona real del consumidor final, mapa de objeciones y segmentos invisibles que el cliente no explota.`,output_note:"Guarda el documento completo — es la base de todo el trabajo para este cliente."},
+      {gem:"Kratos",title:"PUV del cliente",desc:"Destila el diferenciador real. Elimina el lenguaje genérico que el cliente usa actualmente.",inputs:["Brief estratégico de Aura","Cómo se presenta el cliente hoy","Competidores del cliente","Un resultado real que el cliente ha producido"],prompt:`Necesito construir la PUV de mi cliente.\n\nBrief: [de Aura]\nCómo se presentan hoy: [descripción actual]\nCompetidores: [lista]\nResultado real del cliente: [resultado concreto]\n\nElimina el lenguaje genérico. PUV en 3 formatos: pitch, titular web, narrativa de marca.`,output_note:"Guarda el titular y la narrativa — son el eje de todo el copy para este cliente."},
+      {gem:"Alex",title:"Optimización de la oferta del cliente",desc:"Estructura o mejora la oferta del cliente para maximizar el valor percibido.",inputs:["PUV de Kratos","Oferta actual del cliente con precio","Objeciones de compradores (de Aura)","Margen para añadir bonos o garantías"],prompt:`Necesito optimizar la oferta de mi cliente.\n\nPUV: [de Kratos]\nOferta actual: [descripción con precio]\nObjeciones de compradores: [de Aura]\nPosibilidades: [bonos, garantías, bundling]\n\nEvalúa la ecuación de valor actual y propón mejoras: bonos de bajo costo y alto valor percibido, ajuste de garantía, reformulación de entregables.`,output_note:"Guarda los cambios recomendados — los integra CopyMaster en el copy."},
+      {gem:"CopyMaster",title:"Copy de landing, emails y ads",desc:"Kit completo de copy del cliente con la metodología del sistema.",inputs:["PUV de Kratos","Oferta optimizada de Alex","Buyer Persona de Aura","Canal y objetivo de conversión"],prompt:`Necesito el kit de copy para mi cliente.\n\nPUV del cliente: [de Kratos]\nOferta: [de Alex]\nBuyer Persona: [de Aura]\nPiezas necesarias: [landing / emails / ads / otro]\n\nCada pieza con el tono de la marca del cliente. Espera validación entre piezas.`,output_note:"Pasa por HumanText antes de entregar al cliente."},
+      {gem:"ReelPro",title:"Guiones de contenido orgánico del cliente",desc:"5-10 guiones de video para el canal orgánico del cliente.",inputs:["PUV del cliente de Kratos","Buyer Persona de Aura","Plataforma del cliente","Estilo de comunicación del cliente"],prompt:`Necesito guiones de video para el contenido orgánico de mi cliente.\n\nCliente: [tipo de negocio]\nPUV: [de Kratos]\nAudiencia: [de Aura]\nPlataforma: [plataforma]\nEstilo: [formal / cercano / educativo]\n\n[Número] guiones con formatos: demostración, educativo, testimonio, objeción, backstage. Tabla: Audio | Visual | Notas de edición.`,output_note:"Pasa por ReelAudit antes de entregar."},
+      {gem:"VentasFlow",title:"Flujo de WhatsApp para el cliente",desc:"Sistema de ventas conversacional del cliente por WhatsApp.",inputs:["Oferta del cliente de Alex","Objeciones de Aura","Canal de entrada de prospectos","Estilo de comunicación del cliente"],prompt:`Necesito el flujo de ventas por WhatsApp para mi cliente.\n\nNegocio: [tipo]\nOferta: [de Alex]\nObjeciones: [de Aura]\nCanal de entrada: [canal]\n\nFlujo adaptado al negocio: saludo, calificación, presentación, objeciones, cierre. Tono del cliente, listo para implementar o automatizar.`,output_note:"Flujo de WhatsApp del cliente listo para implementar."},
+      {gem:"AdsAudit",title:"Auditoría de anuncios del cliente",desc:"Evalúa creativos antes de publicar o después de resultados bajos.",inputs:["Creativos del cliente","Copy de ads","Canal de publicación","Métricas actuales si las hay"],prompt:`Necesito auditoría de los creativos de mi cliente.\n\nCanal: [canal]\nObjetivo: [objetivo]\nMétricas: [CTR, ROAS u otras]\n\nMatriz de 6 Pilares. Pilar más débil + recomendaciones específicas con ejemplos de cómo mejorar.`,output_note:"Auditoría con puntuación y recomendaciones de mejora."},
+      {gem:"ReelAudit",title:"Auditoría de guiones del cliente",desc:"Evalúa los guiones antes de que el cliente los grabe.",inputs:["Guiones de ReelPro","Plataforma","Objetivo de cada video","Métricas de videos anteriores del cliente"],prompt:`Necesito auditar los guiones del cliente antes de que los grabe.\n\nPlataforma: [plataforma]\nObjetivo: [objetivo]\nGuiones: [guiones de ReelPro]\n\nHook/Content/CTA para cada guión. Puntuación 1-10 y reescritura de hooks débiles. El cliente graba solo los que pasan la auditoría.`,output_note:"Guiones auditados y aprobados para grabación."},
+      {gem:"HumanText",title:"QA final de todos los assets",desc:"Humaniza todos los entregables antes de presentar al cliente.",inputs:["Todo el contenido generado para el cliente","Muestra del tono del cliente (textos suyos)","Piezas que deben sonar como el cliente","Plazo de entrega"],prompt:`Necesito el QA final de todos los assets del cliente.\n\nTono del cliente (referencia): [texto del cliente]\nAssets a revisar: [lista]\nPiezas que deben sonar como el cliente: [lista específica]\n\nHumaniza cada pieza. Donde el cliente habla en primera persona, que suene exactamente como él.`,output_note:"Assets del cliente aprobados para entrega. Sistema de agencia completo."}
+    ]
+  },
+  {
+    id:10, name:"Reinvención profesional completa", steps_count:9,
+    problem:"Quieres cambiar de industria o monetizar diferente tu experiencia pero sin claridad del camino.",
+    result:"Ruta de reinvención clara con nuevo posicionamiento, presencia digital y primeros ingresos.",
+    kpis:{q:"Habilidades adquiridas vs. plan, mensajes de la nueva audiencia, primeros ingresos en el nuevo campo.",c:"Claridad de propósito — explicas tu nueva dirección en 30 segundos sin dudar."},
+    steps:[
+      {gem:"Kenji",title:"Descubrimiento de la nueva dirección",desc:"Encuentra la intersección entre lo que el mercado paga, lo que el mundo necesita y lo que se te da bien.",inputs:["Tu historia profesional completa","Habilidades transferibles","Lo que te genera energía vs. lo que te agota","Tipo de trabajo o vida que quieres en la nueva dirección"],prompt:`Estoy en proceso de reinvención profesional y necesito encontrar mi nueva dirección.\n\nHistoria profesional: [resumen]\nHabilidades transferibles: [lista]\nMe genera energía: [actividades]\nMe agota: [actividades]\nVida deseada: [descripción]\n\nFacilita con diálogo socrático. Entrega: nueva dirección validada con Ikigai y las 2-3 opciones más prometedoras.`,checkpoint:"¿La nueva dirección cruza los 4 círculos del Ikigai? ¿Puedes articularla en 1 oración?",output_note:"Guarda la dirección elegida — MentorPro la desarrolla en el plan."},
+      {gem:"MentorPro",title:"Plan estratégico de desarrollo",desc:"Identifica brechas y diseña el plan con metodología SMART.",inputs:["Nueva dirección de Kenji","Habilidades actuales","Tiempo disponible para la transición","Compromisos actuales que se mantienen"],prompt:`Necesito el Plan Estratégico de Desarrollo para mi reinvención.\n\nNueva dirección: [de Kenji]\nHabilidades actuales: [lista]\nTiempo para transición: [meses]\nCompromisos paralelos: [compromisos]\n\nBrechas entre mi perfil actual y la nueva dirección. Plan SMART con habilidades prioritarias, recursos de aprendizaje y tácticas de ejecución inmediata.`,output_note:"Guarda las 3 habilidades prioritarias — son el foco de los primeros 90 días."},
+      {gem:"Lexis",title:"Investigación del nuevo ecosistema",desc:"Investiga la nueva industria: tendencias, players clave, modelos de monetización y vacíos.",inputs:["Nueva dirección de Kenji","Industria o nicho específico","Tipo de monetización deseada","Preguntas específicas sobre el mercado"],prompt:`Necesito investigar el ecosistema de mi nueva dirección.\n\nNueva dirección: [de Kenji]\nIndustria: [industria]\nMonetización deseada: [tipo]\n\nTendencias del sector, players principales, modelos de monetización, vacíos con menor competencia y datos que validen la demanda.`,output_note:"Guarda los vacíos y nichos de menor competencia — los usa Aura para encontrar la oportunidad."},
+      {gem:"Aura",title:"Oportunidad de mercado en el nuevo campo",desc:"Identifica el segmento con mayor oportunidad y menor competencia para entrar.",inputs:["Expediente de Lexis","Nueva dirección de Kenji","Habilidades transferibles de MentorPro","Perfil del cliente al que podrías servir"],prompt:`Necesito identificar mi mejor oportunidad de entrada en [nueva industria].\n\nExpediente: [de Lexis]\nHabilidades transferibles: [de MentorPro]\nCliente potencial: [descripción]\n\nSegmento con mayor oportunidad para alguien con mi perfil, Buyer Persona de ese segmento y problema que podría resolver con mis habilidades.`,output_note:"Guarda el segmento y el problema a resolver — son el input de Kratos."},
+      {gem:"Kratos",title:"Nuevo posicionamiento",desc:"Construye el mensaje que conecta tu experiencia anterior como ventaja, no como lastre.",inputs:["Nueva dirección de Kenji","Segmento y Buyer Persona de Aura","Habilidades transferibles de MentorPro","Cómo tu experiencia anterior beneficia al nuevo cliente"],prompt:`Necesito construir mi nuevo posicionamiento para la reinvención.\n\nNueva dirección: [de Kenji]\nNuevo cliente: [de Aura]\nExperiencia transferible: [de MentorPro]\nCómo mi experiencia anterior ayuda: [conexión]\n\nPUV que reencuadra mi trayectoria como ventaja diferencial en el nuevo campo. 3 formatos.`,output_note:"Guarda el formato que reencuadra la experiencia anterior — es el núcleo de la narrativa de transición."},
+      {gem:"Brandon",title:"Nueva identidad visual",desc:"Diseña la identidad visual alineada con la reinvención y el nuevo cliente.",inputs:["PUV nueva de Kratos","Buyer Persona de Aura","Sentimiento deseado en el nuevo campo","Identidad visual anterior (si existe)"],prompt:`Necesito diseñar mi nueva identidad visual para la reinvención.\n\nPUV nueva: [de Kratos]\nNuevo cliente: [de Aura]\nSentimiento deseado: [descripción]\nIdentidad anterior: [descripción o "no tengo"]\n\nNueva paleta, tipografía, personalidad visual. Indica qué mantener de la identidad anterior para continuidad y qué cambiar.`,output_note:"Guarda la guía de estilo — la usa Pixel si necesitas imágenes de marca."},
+      {gem:"Brandlink",title:"Reconstrucción del perfil LinkedIn",desc:"Reconstruye tu LinkedIn para el nuevo campo sin borrar la trayectoria anterior.",inputs:["PUV nueva de Kratos","Buyer Persona nuevo de Aura","Trayectoria anterior (para reencuadrar, no borrar)","3 logros transferibles al nuevo campo"],prompt:`Necesito reconstruir mi LinkedIn para mi reinvención.\n\nNueva PUV: [de Kratos]\nNueva audiencia: [de Aura]\nTrayectoria anterior relevante: [logros transferibles]\n\nNo borres la experiencia anterior — reencuádrala como ventaja. Nuevo titular, "Acerca de" que cuenta la transición como narrativa de autoridad y experiencia reorientada.`,output_note:"Guarda el titular y el 'Acerca de' — los usa Copylink como referencia de voz."},
+      {gem:"Copylink",title:"Contenido de posicionamiento en el nuevo nicho",desc:"Posts que te posicionan en el nuevo campo aprovechando tu experiencia anterior.",inputs:["PUV nueva de Kratos","Titular LinkedIn de Brandlink","Buyer Persona nuevo de Aura","5 temas donde tu trayectoria aporta perspectiva única al nuevo campo"],prompt:`Necesito posts de LinkedIn para posicionarme en mi nuevo campo.\n\nPUV nueva: [de Kratos]\nAudiencia nueva: [de Aura]\nTemas con perspectiva única: [lista]\n\n12 posts para el primer mes. Alterna: historia de reinvención, perspectiva del "outsider que viene de X", aprendizaje en los primeros 90 días, opinión contraintuitiva. Que suene a transición real, no a impostor.`,output_note:"Guarda los posts de historia y perspectiva — son los de mayor conexión emocional."},
+      {gem:"Cronos",title:"Roadmap de transición por sprints",desc:"Organiza la transición en sprints de 2 semanas con metas y plazos realistas.",inputs:["Plan de desarrollo de MentorPro","Entregables pendientes","Compromisos actuales paralelos","Fecha objetivo para estar activo en el nuevo campo"],prompt:`Necesito el roadmap de mi transición profesional.\n\nPlan de desarrollo: [de MentorPro]\nPendientes: [lista]\nCompromisos paralelos: [descripción]\nFecha objetivo: [fecha]\n\nSprints de 2 semanas: habilidades a adquirir, presencia digital a construir, primeros contactos y primer ingreso objetivo. Con compromisos paralelos incluidos. Exportable a Google Sheets.`,output_note:"Roadmap de transición en sprints. Sistema de reinvención completo."}
+    ]
+  }
+];
+
+// ── State ──────────────────────────────────────────────
+let currentSys = null;
+let currentStep = 0;
+let state = {}; // { sysId: { step, checks: [[bool]], outputs: [string] } }
+
+function loadState() {
+  try { state = JSON.parse(localStorage.getItem('gp_runner') || '{}'); } catch(e) { state = {}; }
+}
+function saveState() {
+  try { localStorage.setItem('gp_runner', JSON.stringify(state)); } catch(e) {}
+}
+function getSysState(id) {
+  if (!state[id]) {
+    const sys = SYSTEMS.find(s => s.id === id);
+    state[id] = { step: 0, checks: sys.steps.map(s => new Array(s.inputs.length).fill(false)), outputs: new Array(sys.steps.length).fill('') };
+  }
+  return state[id];
+}
+function getSysProgress(id) {
+  if (!state[id]) return 0;
+  const s = state[id];
+  const filledOutputs = s.outputs.filter(o => o && o.trim()).length;
+  return Math.round((filledOutputs / SYSTEMS.find(x => x.id === id).steps.length) * 100);
+}
+
+// ── Selector ────────────────────────────────────────────
+function buildSelector() {
+  const grid = document.getElementById('sys-grid');
+  grid.innerHTML = SYSTEMS.map(sys => {
+    const prog = getSysProgress(sys.id);
+    const hasProg = prog > 0;
+    return `<div class="sys-card ${hasProg ? 'has-progress' : ''}" onclick="selectSystem(${sys.id})">
+      <p class="sys-num">Sistema ${sys.id} ${hasProg ? '· ' + prog + '% completado' : ''}</p>
+      <p class="sys-name">${sys.name}</p>
+      <p class="sys-prob">${sys.problem}</p>
+      <div class="sys-meta">
+        <span>${sys.steps.length} etapas</span>
+        <span>${sys.steps.map(s=>s.gem).slice(0,3).join(' · ')}${sys.steps.length > 3 ? '…' : ''}</span>
+      </div>
+      ${hasProg ? `<div class="sys-progress-bar"><div class="sys-progress-fill" style="width:${prog}%"></div></div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ── Runner ──────────────────────────────────────────────
+function selectSystem(id) {
+  currentSys = SYSTEMS.find(s => s.id === id);
+  const ss = getSysState(id);
+  currentStep = ss.step;
+  document.getElementById('screen-select').classList.remove('active');
+  document.getElementById('screen-runner').classList.add('active');
+  document.getElementById('rh-title').textContent = `Sistema ${currentSys.id} — ${currentSys.name}`;
+  document.getElementById('rh-sub').textContent = currentSys.result;
+  renderStep();
+}
+
+function goBack() {
+  // Save current output before leaving
+  saveCurrentOutput();
+  document.getElementById('screen-runner').classList.remove('active');
+  document.getElementById('screen-select').classList.add('active');
+  buildSelector();
+}
+
+function saveCurrentOutput() {
+  if (!currentSys) return;
+  const ta = document.getElementById('output-ta');
+  if (ta) {
+    getSysState(currentSys.id).outputs[currentStep] = ta.value;
+    saveState();
+  }
+}
+
+function renderStep() {
+  const steps = currentSys.steps;
+  const s = steps[currentStep];
+  const ss = getSysState(currentSys.id);
+  const isLast = currentStep === steps.length - 1;
+
+  // Stepper
+  const stepperEl = document.getElementById('stepper');
+  let stepperHTML = '';
+  steps.forEach((st, i) => {
+    const cls = i < currentStep ? 'done' : i === currentStep ? 'active' : '';
+    stepperHTML += `<div class="step-pip-wrap ${cls}" onclick="jumpTo(${i})">
+      <div class="step-pip">${i < currentStep ? '✓' : i + 1}</div>
+      <div class="step-gem-label">${st.gem}</div>
+    </div>`;
+    if (i < steps.length - 1) {
+      stepperHTML += `<div class="step-connector ${i < currentStep ? 'done' : ''}"></div>`;
+    }
+  });
+  stepperEl.innerHTML = stepperHTML;
+  // Scroll active pip into view
+  setTimeout(() => {
+    const active = stepperEl.querySelector('.active');
+    if (active) active.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }, 50);
+
+  // Gem initial
+  const gemInitial = s.gem.substring(0, 2).toUpperCase();
+
+  // Build step view
+  let html = `<div class="step-card">
+    <div class="step-header">
+      <div class="gem-icon">${gemInitial}</div>
+      <div class="step-header-text">
+        <div class="step-gem-name">${s.gem}</div>
+        <div class="step-title">${s.title}</div>
+        <div class="step-desc">${s.desc}</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="sec-label">Información que necesitas antes de abrir el Gem</div>
+      <div class="input-list">`;
+
+  s.inputs.forEach((inp, idx) => {
+    const done = ss.checks[currentStep][idx];
+    html += `<div class="inp-row" onclick="toggleCheck(${idx})">
+      <div class="chkbox ${done ? 'on' : ''}">${done ? '✓' : ''}</div>
+      <span class="inp-txt ${done ? 'done' : ''}">${inp}</span>
+    </div>`;
+  });
+
+  html += `</div>`;
+
+  if (s.checkpoint) {
+    html += `<div class="checkpoint"><span class="checkpoint-icon">⚠</span><span>Checkpoint — ${s.checkpoint}</span></div>`;
+  }
+
+  html += `<div class="sec-label">Prompt para este Gem</div>
+    <div class="prompt-wrap">
+      <div class="prompt-box">${fmtPrompt(s.prompt)}</div>
+      <button class="copy-btn" id="copy-btn" onclick="copyPrompt()">Copiar prompt</button>
+    </div>
+    <div class="sec-label">Qué guardar del output de ${s.gem}</div>
+    <div class="output-note"><span class="output-note-icon">→</span><span>${s.output_note}</span></div>
+    <div class="output-field-wrap">
+      <textarea class="output-textarea ${ss.outputs[currentStep] ? 'has-content' : ''}" id="output-ta" placeholder="Pega aquí el output relevante de ${s.gem}…" oninput="onOutputChange(this)">${ss.outputs[currentStep] || ''}</textarea>
+      <div class="save-note">Se guarda automáticamente · accesible en pasos siguientes</div>
+    </div>`;
+
+  html += `</div></div>`;
+
+  // Completion screen on last step
+  if (isLast && ss.outputs[currentStep]) {
+    const related = getRelatedSystems(currentSys.id);
+    const relatedHTML = related.length ? `
+      <div class="completion-section">
+        <div class="completion-section-title">Sistemas que se alimentan de este trabajo</div>
+        <div class="related-grid">
+          ${related.map(r => `
+            <div class="related-card" onclick="goToRelated(${r.id})">
+              <div class="related-sys-num">Sistema ${r.id}</div>
+              <div class="related-sys-name">${r.name}</div>
+              <div class="related-preload">${r.preloadNote}</div>
+              <div class="related-action">Ir a este sistema</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>` : '';
+
+    html += `<div class="complete-wrap">
+      <div class="complete-card">
+        <div class="complete-icon">✦</div>
+        <div class="complete-title">Sistema ${currentSys.id} completado</div>
+        <div class="complete-sub">${currentSys.result}</div>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-label">KPIs cuantitativos</div><div class="kpi-content">${currentSys.kpis.q}</div></div>
+        <div class="kpi-card"><div class="kpi-label">KPIs cualitativos</div><div class="kpi-content">${currentSys.kpis.c}</div></div>
+      </div>
+
+      <div class="completion-section">
+        <div class="completion-section-title">Exportar brief de trabajo</div>
+        <button class="export-btn" onclick="exportBrief()">
+          <span class="export-icon">↓</span>
+          Descargar brief completo del Sistema ${currentSys.id}
+        </button>
+        <div class="export-hint">Documento con todos los outputs guardados por etapa</div>
+      </div>
+
+      ${relatedHTML}
+
+      <div class="completion-section" style="text-align:center">
+        <button class="restart-btn" onclick="resetSystem()">↺ Reiniciar sistema ${currentSys.id}</button>
+      </div>
+    </div>`;
+  }
+
+  document.getElementById('step-view').innerHTML = html;
+  document.getElementById('step-counter').textContent = `${currentStep + 1} / ${steps.length}`;
+  document.getElementById('btn-prev').disabled = currentStep === 0;
+  const nextBtn = document.getElementById('btn-next');
+  nextBtn.disabled = isLast;
+  nextBtn.textContent = isLast ? 'Completado ✓' : 'Siguiente →';
+}
+
+function fmtPrompt(text) {
+  return text.replace(/\[([^\]]+)\]/g, '<span class="prompt-var">[$1]</span>');
+}
+
+function toggleCheck(idx) {
+  const ss = getSysState(currentSys.id);
+  ss.checks[currentStep][idx] = !ss.checks[currentStep][idx];
+  saveState();
+  renderStep();
+}
+
+function onOutputChange(el) {
+  const ss = getSysState(currentSys.id);
+  ss.outputs[currentStep] = el.value;
+  el.classList.toggle('has-content', !!el.value.trim());
+  ss.step = currentStep;
+  saveState();
+}
+
+function nav(dir) {
+  saveCurrentOutput();
+  const max = currentSys.steps.length - 1;
+  if (currentStep + dir < 0 || currentStep + dir > max) return;
+  currentStep += dir;
+  getSysState(currentSys.id).step = currentStep;
+  saveState();
+  renderStep();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function jumpTo(i) {
+  saveCurrentOutput();
+  currentStep = i;
+  getSysState(currentSys.id).step = i;
+  saveState();
+  renderStep();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function copyPrompt() {
+  const text = currentSys.steps[currentStep].prompt;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-btn');
+    if (!btn) return;
+    btn.textContent = '✓ Copiado';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copiar prompt'; btn.classList.remove('copied'); }, 1800);
+  });
+}
+
+function resetSystem() {
+  if (!confirm(`¿Reiniciar el progreso del Sistema ${currentSys.id}? Se perderán todos los outputs guardados.`)) return;
+  delete state[currentSys.id];
+  saveState();
+  currentStep = 0;
+  renderStep();
+}
+
+// ── Cross-system connections ─────────────────────────────
+const CONNECTIONS = {
+  1: [
+    { id:5, name:"Marca personal desde cero", preloadNote:"Pre-carga tu <strong>Ikigai y tema central</strong> (Kenji) y el <strong>Buyer Persona</strong> (Aura) en los primeros pasos." },
+    { id:6, name:"Máquina de contenido multicanal", preloadNote:"Pre-carga la <strong>PUV y titular</strong> (Kratos) y el <strong>Buyer Persona</strong> en Schwartz y Copylink." },
+    { id:8, name:"Auditoría y optimización de funnel", preloadNote:"Pre-carga la <strong>PUV</strong>, <strong>oferta Grand Slam</strong> y el <strong>copy de landing</strong> como punto de partida del diagnóstico." }
+  ],
+  2: [
+    { id:6, name:"Máquina de contenido multicanal", preloadNote:"Pre-carga los <strong>ángulos de Schwartz</strong> y el <strong>Buyer Persona</strong> para la producción semanal." },
+    { id:8, name:"Auditoría y optimización de funnel", preloadNote:"Pre-carga el <strong>copy del funnel de afiliado</strong> y la <strong>página puente</strong> para diagnosticar la fuga." }
+  ],
+  3: [
+    { id:6, name:"Máquina de contenido multicanal", preloadNote:"Pre-carga la <strong>PUV del producto</strong> y el <strong>Buyer Persona</strong> como base del contenido semanal." },
+    { id:8, name:"Auditoría y optimización de funnel", preloadNote:"Pre-carga la <strong>PUV</strong> y el <strong>copy de ads</strong> para el diagnóstico de conversión." }
+  ],
+  4: [
+    { id:5, name:"Marca personal desde cero", preloadNote:"Pre-carga el <strong>Ikigai y zona de genialidad</strong> (Kenji) y el <strong>Buyer Persona B2B</strong> (Aura)." },
+    { id:6, name:"Máquina de contenido multicanal", preloadNote:"Pre-carga la <strong>PUV \"Ayudo a...\"</strong> y el <strong>titular de LinkedIn</strong> en Copylink y Schwartz." },
+    { id:8, name:"Auditoría y optimización de funnel", preloadNote:"Pre-carga la <strong>PUV</strong>, <strong>oferta de alto ticket</strong>, <strong>copy de landing</strong> y <strong>objeciones de SalesSim</strong>." },
+    { id:9, name:"Agencia o freelancer de marketing", preloadNote:"Pre-carga el <strong>Buyer Persona B2B</strong> como base del brief estratégico del primer cliente." },
+    { id:10, name:"Reinvención profesional", preloadNote:"Pre-carga el <strong>Plan Estratégico de MentorPro</strong> y el <strong>Ikigai de Kenji</strong> como punto de partida." }
+  ],
+  5: [
+    { id:4, name:"Venta de servicios profesionales", preloadNote:"Pre-carga el <strong>Ikigai</strong>, el <strong>Buyer Persona</strong> y la <strong>PUV personal</strong> como base del posicionamiento del servicio." },
+    { id:6, name:"Máquina de contenido multicanal", preloadNote:"Pre-carga la <strong>PUV personal</strong> y el <strong>titular de LinkedIn</strong> como referencia de voz para Copylink." },
+    { id:10, name:"Reinvención profesional", preloadNote:"Pre-carga la <strong>identidad visual</strong> (Brandon) para decidir qué mantener en la nueva dirección." }
+  ],
+  6: [],
+  7: [
+    { id:6, name:"Máquina de contenido multicanal", preloadNote:"Pre-carga la <strong>PUV del curso</strong> y el <strong>Buyer Persona del alumno</strong> para el pipeline semanal post-lanzamiento." },
+    { id:8, name:"Auditoría y optimización de funnel", preloadNote:"Pre-carga la <strong>PUV</strong>, <strong>oferta</strong>, <strong>copy de landing</strong> y <strong>secuencia de emails</strong> para diagnosticar la fuga." }
+  ],
+  8: [],
+  9: [
+    { id:8, name:"Auditoría y optimización de funnel", preloadNote:"Pre-carga el <strong>brief del cliente</strong>, <strong>PUV</strong>, <strong>oferta</strong> y <strong>copy</strong> como punto de partida del diagnóstico." }
+  ],
+  10: [
+    { id:4, name:"Venta de servicios profesionales", preloadNote:"Pre-carga la <strong>nueva dirección (Kenji)</strong> y el <strong>Plan de MentorPro</strong> como base del posicionamiento del servicio." },
+    { id:5, name:"Marca personal desde cero", preloadNote:"Pre-carga el <strong>Buyer Persona nuevo</strong> (Aura), <strong>posicionamiento</strong> (Kratos) e <strong>identidad visual</strong> (Brandon)." }
+  ]
+};
+
+// Pre-load map: { fromSys: { toSys: [ { toStep, toField, fromStep, fromGem } ] } }
+const PRELOADS = {
+  1: {
+    5: [ { toStep:0, fromStep:0, fromGem:'Kenji', hint:'Tema validado e Ikigai del S1' }, { toStep:1, fromStep:1, fromGem:'Aura', hint:'Buyer Persona del S1' } ],
+    6: [ { toStep:0, fromStep:1, fromGem:'Aura', hint:'Buyer Persona del S1' }, { toStep:2, fromStep:5, fromGem:'Kratos', hint:'PUV del S1' } ],
+    8: [ { toStep:4, fromStep:5, fromGem:'Kratos', hint:'PUV del S1' }, { toStep:5, fromStep:6, fromGem:'Alex', hint:'Oferta Grand Slam del S1' }, { toStep:3, fromStep:7, fromGem:'LandingPro', hint:'Copy de landing del S1' } ]
+  },
+  4: {
+    5: [ { toStep:0, fromStep:1, fromGem:'Kenji', hint:'Ikigai y zona de genialidad del S4' }, { toStep:1, fromStep:2, fromGem:'Aura', hint:'Buyer Persona B2B del S4' } ],
+    6: [ { toStep:0, fromStep:2, fromGem:'Aura', hint:'Buyer Persona del S4' }, { toStep:2, fromStep:3, fromGem:'Kratos', hint:'PUV del S4' } ],
+    8: [ { toStep:4, fromStep:3, fromGem:'Kratos', hint:'PUV del S4' }, { toStep:5, fromStep:4, fromGem:'Alex', hint:'Oferta del S4' }, { toStep:3, fromStep:7, fromGem:'LandingPro', hint:'Copy de landing del S4' }, { toStep:7, fromStep:8, fromGem:'SalesSim', hint:'Objeciones reales del S4' } ],
+    9: [ { toStep:0, fromStep:2, fromGem:'Aura', hint:'Buyer Persona B2B del S4' } ],
+    10: [ { toStep:1, fromStep:0, fromGem:'MentorPro', hint:'Plan estratégico del S4' }, { toStep:0, fromStep:1, fromGem:'Kenji', hint:'Ikigai del S4' } ]
+  },
+  5: {
+    4: [ { toStep:1, fromStep:0, fromGem:'Kenji', hint:'Ikigai del S5' }, { toStep:2, fromStep:1, fromGem:'Aura', hint:'Buyer Persona del S5' }, { toStep:3, fromStep:2, fromGem:'Kratos', hint:'PUV personal del S5' } ],
+    6: [ { toStep:0, fromStep:1, fromGem:'Aura', hint:'Buyer Persona del S5' }, { toStep:2, fromStep:4, fromGem:'Brandlink', hint:'Titular LinkedIn del S5' } ],
+    10: [ { toStep:5, fromStep:3, fromGem:'Brandon', hint:'Identidad visual del S5' } ]
+  },
+  7: {
+    6: [ { toStep:0, fromStep:0, fromGem:'Aura', hint:'Buyer Persona del alumno (S7)' }, { toStep:2, fromStep:3, fromGem:'Kratos', hint:'PUV del curso (S7)' } ],
+    8: [ { toStep:4, fromStep:3, fromGem:'Kratos', hint:'PUV del curso (S7)' }, { toStep:5, fromStep:4, fromGem:'Alex', hint:'Oferta del curso (S7)' }, { toStep:3, fromStep:5, fromGem:'LandingPro', hint:'Copy de landing del curso (S7)' } ]
+  },
+  9: {
+    8: [ { toStep:0, fromStep:0, fromGem:'Aura', hint:'Brief estratégico del cliente (S9)' }, { toStep:4, fromStep:1, fromGem:'Kratos', hint:'PUV del cliente (S9)' }, { toStep:5, fromStep:2, fromGem:'Alex', hint:'Oferta del cliente (S9)' }, { toStep:3, fromStep:3, fromGem:'CopyMaster', hint:'Copy del cliente (S9)' } ]
+  },
+  10: {
+    4: [ { toStep:0, fromStep:1, fromGem:'MentorPro', hint:'Plan estratégico del S10' }, { toStep:1, fromStep:0, fromGem:'Kenji', hint:'Nueva dirección del S10' } ],
+    5: [ { toStep:1, fromStep:3, fromGem:'Aura', hint:'Buyer Persona nuevo del S10' }, { toStep:2, fromStep:4, fromGem:'Kratos', hint:'Nuevo posicionamiento del S10' }, { toStep:3, fromStep:5, fromGem:'Brandon', hint:'Nueva identidad visual del S10' } ]
+  }
+};
+
+function getRelatedSystems(sysId) {
+  return (CONNECTIONS[sysId] || []).map(r => ({
+    ...r,
+    sys: SYSTEMS.find(s => s.id === r.id)
+  }));
+}
+
+function goToRelated(toSysId) {
+  const fromSysId = currentSys.id;
+  saveCurrentOutput();
+
+  // Apply preloads as suggestions
+  const preloadMap = PRELOADS[fromSysId] && PRELOADS[fromSysId][toSysId];
+  if (preloadMap) {
+    const fromSS = getSysState(fromSysId);
+    const toSS = getSysState(toSysId);
+    preloadMap.forEach(p => {
+      const fromOutput = fromSS.outputs[p.fromStep];
+      if (fromOutput && fromOutput.trim()) {
+        const existing = toSS.outputs[p.toStep];
+        const separator = existing && existing.trim() ? '\n\n---\n' : '';
+        const suggestion = `${separator}[Sugerencia desde S${fromSysId} — ${p.hint}]\n${fromOutput}`;
+        if (!existing || !existing.includes(`S${fromSysId}`)) {
+          toSS.outputs[p.toStep] = existing ? existing + suggestion : suggestion;
+        }
+      }
+    });
+    saveState();
+  }
+
+  selectSystem(toSysId);
+}
+
+// ── Export brief ─────────────────────────────────────────
+function exportBrief() {
+  const ss = getSysState(currentSys.id);
+  const steps = currentSys.steps;
+  const date = new Date().toLocaleDateString('es-ES', { day:'2-digit', month:'long', year:'numeric' });
+
+  let content = `GEMS PACK — BRIEF DE TRABAJO\n`;
+  content += `${'═'.repeat(50)}\n`;
+  content += `Sistema ${currentSys.id}: ${currentSys.name}\n`;
+  content += `Fecha: ${date}\n`;
+  content += `${'═'.repeat(50)}\n\n`;
+  content += `RESULTADO ESPERADO\n${'-'.repeat(30)}\n${currentSys.result}\n\n`;
+  content += `KPIs CUANTITATIVOS\n${'-'.repeat(30)}\n${currentSys.kpis.q}\n\n`;
+  content += `KPIs CUALITATIVOS\n${'-'.repeat(30)}\n${currentSys.kpis.c}\n\n`;
+  content += `${'═'.repeat(50)}\nOUTPUTS POR ETAPA\n${'═'.repeat(50)}\n\n`;
+
+  steps.forEach((s, i) => {
+    const output = ss.outputs[i];
+    const checksDone = ss.checks[i].filter(Boolean).length;
+    const checksTotal = ss.checks[i].length;
+    content += `ETAPA ${i + 1}: ${s.title.toUpperCase()} (${s.gem})\n`;
+    content += `${'-'.repeat(40)}\n`;
+    content += `Inputs revisados: ${checksDone}/${checksTotal}\n`;
+    if (output && output.trim()) {
+      content += `\nOutput guardado:\n${output}\n`;
+    } else {
+      content += `\nOutput guardado: [pendiente]\n`;
+    }
+    content += `\n`;
+  });
+
+  content += `${'═'.repeat(50)}\n`;
+  content += `Generado con Gems Pack System Runner\n`;
+  content += `rodolfobuitrago.com\n`;
+
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `gems-brief-sistema-${currentSys.id}-${Date.now()}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── Init ────────────────────────────────────────────────
+loadState();
+buildSelector();
+</script>
+</body>
+</html>

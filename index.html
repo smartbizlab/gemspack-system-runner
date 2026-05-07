@@ -1227,7 +1227,7 @@ function renderStep() {
   html += `</div></div>`;
 
   // Completion screen on last step
-  if (isLast && ss.outputs[currentStep]) {
+  if (isLast) {
     const related = getRelatedSystems(currentSys.id);
     const relatedHTML = related.length ? `
       <div class="completion-section">
@@ -1244,7 +1244,7 @@ function renderStep() {
         </div>
       </div>` : '';
 
-    html += `<div class="complete-wrap">
+    html += `<div class="complete-wrap" id="complete-wrap">
       <div class="complete-card">
         <div class="complete-icon">✦</div>
         <div class="complete-title">Sistema ${currentSys.id} completado</div>
@@ -1277,7 +1277,15 @@ function renderStep() {
   document.getElementById('btn-prev').disabled = currentStep === 0;
   const nextBtn = document.getElementById('btn-next');
   nextBtn.disabled = isLast;
-  nextBtn.textContent = isLast ? 'Completado ✓' : 'Siguiente →';
+  nextBtn.textContent = isLast ? 'Ver resultados ↓' : 'Siguiente →';
+
+  // On last step, scroll to completion section after a short delay
+  if (isLast) {
+    setTimeout(() => {
+      const cw = document.getElementById('complete-wrap');
+      if (cw) cw.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 300);
+  }
 }
 
 function fmtPrompt(text) {

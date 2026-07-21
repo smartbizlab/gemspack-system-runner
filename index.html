@@ -1204,10 +1204,10 @@ body {
       <div class="runner-top">
         <div class="runner-info">
           <h2 id="rh-title"></h2>
-          <p id="rh-sub"></p>
         </div>
-        <button class="back-btn" onclick="goBack()">← Sistemas</button>
+        <button class="back-btn" onclick="goBack()">← Inicio</button>
       </div>
+      <div class="sys-overview" id="sys-overview"></div>
       <div id="step-view"></div>
       <div class="step-nav">
         <button class="nav-btn" id="btn-prev" onclick="nav(-1)">← Anterior</button>
@@ -2038,12 +2038,13 @@ function renderStep() {
 
   // ── System overview bar ──────────────────────────────────────────────────
   const overviewEl = document.getElementById('sys-overview');
+  if (!overviewEl) { console.warn('sys-overview not found'); }
   const seqHtml = steps.map((st, i) => {
     const cls = i < currentStep ? 'seq-done' : i === currentStep ? 'seq-active' : '';
     const arrow = i < steps.length - 1 ? '<span class="seq-arrow">›</span>' : '';
     return `<span class="sys-gem-seq-pill ${cls}" onclick="jumpTo(${i})">${st.gem}</span>${arrow}`;
   }).join('');
-  overviewEl.innerHTML = `
+  if (overviewEl) overviewEl.innerHTML = `
     <div class="sys-overview-desc">${currentSys.result}</div>
     <div class="sys-gem-sequence">${seqHtml}</div>`;
 
@@ -2158,12 +2159,20 @@ function renderStep() {
     </div>`;
   }
 
-  document.getElementById('step-view').innerHTML = html;
-  document.getElementById('step-counter').textContent = `${currentStep + 1} / ${steps.length}`;
-  document.getElementById('btn-prev').disabled = currentStep === 0;
+  const stepView = document.getElementById('step-view');
+  if (stepView) stepView.innerHTML = html;
+
+  const counter = document.getElementById('step-counter');
+  if (counter) counter.textContent = `${currentStep + 1} / ${steps.length}`;
+
+  const prevBtn = document.getElementById('btn-prev');
+  if (prevBtn) prevBtn.disabled = currentStep === 0;
+
   const nextBtn = document.getElementById('btn-next');
-  nextBtn.disabled = isLast;
-  nextBtn.textContent = isLast ? 'Ver resultados ↓' : 'Siguiente →';
+  if (nextBtn) {
+    nextBtn.disabled = isLast;
+    nextBtn.textContent = isLast ? 'Ver resultados ↓' : 'Siguiente →';
+  }
 
   if (isLast) {
     setTimeout(() => {
@@ -2432,7 +2441,7 @@ const ORC_SYSTEMS = {
   },
   4: {
     name: "Venta de productos físicos",
-    triggers: ["suplemento","suplementos","vitamínico","vitaminas","vitamina","alimentos","comida","bebidas","bebida","calzado","zapatos","moda","ropa","cosméticos","cosmético","belleza","mascotas","artesanía","joyería","bisutería","accesorios","producto físico","productos físicos","tienda","inventario","ecommerce","e-commerce","catálogo","whatsapp business","envío","stock","físico","local","vender físico","vendo físico","artículos","mercancía","producto natural","productos naturales","skincare","cuidado personal","promover suplemento","promover cosméticos","promover cosmético","promover calzado","promover ropa","promover alimentos","promover productos","producto de moda","vender suplemento","vender cosméticos","vender calzado"],
+    triggers: ["inmueble","inmuebles","casa","casas","apartamento","departamento","departamentos","propiedad","propiedades","vivienda","viviendas","bienes raíces","bienes raices","finca raíz","finca raiz","terreno","lote","oficina comercial","local comercial","arrendamiento","arriendo","alquiler de","suplemento","suplementos","vitamínico","vitaminas","vitamina","alimentos","comida","bebidas","bebida","calzado","zapatos","moda","ropa","cosméticos","cosmético","belleza","mascotas","artesanía","joyería","bisutería","accesorios","producto físico","productos físicos","tienda","inventario","ecommerce","e-commerce","catálogo","whatsapp business","envío","stock","físico","local","vender físico","vendo físico","artículos","mercancía","producto natural","productos naturales","skincare","cuidado personal","promover suplemento","promover cosméticos","promover cosmético","promover calzado","promover ropa","promover alimentos","promover productos","producto de moda","vender suplemento","vender cosméticos","vender calzado"],
     diag: "El usuario vende un producto físico que compite por precio y necesita diferenciación, identidad de marca y sistema de ventas.",
     gems: [
       {name:"Aura", role:"Segmentación de audiencia"},

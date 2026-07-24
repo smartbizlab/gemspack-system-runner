@@ -380,6 +380,16 @@ body {
 .step-desc { font-size: var(--text-base); color: var(--text2); line-height: 1.6; font-weight: 400; }
 
 .step-body { padding: 18px 22px 22px; }
+.step-how-to {
+  font-size: var(--text-sm);
+  color: var(--text2);
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+.step-how-to strong { color: var(--em); }
 
 /* ── Section labels ── */
 .sec-label {
@@ -2125,7 +2135,14 @@ function renderStep() {
     <div class="sys-gem-sequence">${seqHtml}</div>`;
 
   // ── Step card ────────────────────────────────────────────────────────────
-  let html = `<div class="step-card">
+  let html = '';
+  try {
+    // Ensure checks array has entry for this step
+    if (!ss.checks[currentStep]) {
+      ss.checks[currentStep] = new Array(s.inputs.length).fill(false);
+    }
+
+    html = `<div class="step-card">
     <div class="gem-header">
       <div class="gem-step-num">${currentStep + 1}</div>
       <div class="gem-meta">
@@ -2136,38 +2153,47 @@ function renderStep() {
         <div class="gem-desc">${s.desc}</div>
       </div>
     </div>
-    <div class="step-body">`;
+    <div class="step-body">
+    <div class="step-how-to">Abre <strong>${s.gem}</strong> en Gemini, usa la información de abajo, y pega el resultado en el campo al final.</div>`;
 
-  // Checklist
-  html += `<div class="sec-label">Antes de abrir este Gem</div>
-      <div class="input-list">`;
-  s.inputs.forEach((inp, idx) => {
-    const done = ss.checks[currentStep][idx];
-    html += `<div class="inp-row" onclick="toggleCheck(${idx})">
-      <div class="chkbox ${done ? 'on' : ''}">${done ? '✓' : ''}</div>
-      <span class="inp-txt ${done ? 'done' : ''}">${inp}</span>
-    </div>`;
-  });
-  html += `</div>`;
+    // Checklist
+    html += `<div class="sec-label">Antes de abrir este Gem</div>
+        <div class="input-list">`;
+    s.inputs.forEach((inp, idx) => {
+      const done = ss.checks[currentStep][idx] || false;
+      html += `<div class="inp-row" onclick="toggleCheck(${idx})">
+        <div class="chkbox ${done ? 'on' : ''}">${done ? '✓' : ''}</div>
+        <span class="inp-txt ${done ? 'done' : ''}">${inp}</span>
+      </div>`;
+    });
+    html += `</div>`;
 
-  // Checkpoint
-  if (s.checkpoint) {
-    html += `<div class="checkpoint"><span class="checkpoint-icon">⚠</span><span>${s.checkpoint}</span></div>`;
+    // Checkpoint
+    if (s.checkpoint) {
+      html += `<div class="checkpoint"><span class="checkpoint-icon">⚠</span><span>${s.checkpoint}</span></div>`;
+    }
+
+    // Output note
+    html += `<div class="sec-label" style="margin-top:14px">Qué guardar del output</div>
+        <div class="output-note"><span class="output-note-icon">→</span><span>${s.output_note}</span></div>`;
+
+    // Output textarea
+    const savedOutput = (ss.outputs && ss.outputs[currentStep]) ? ss.outputs[currentStep] : '';
+    html += `<div class="output-field-wrap" style="margin-top:12px">
+        <textarea class="output-textarea ${savedOutput ? 'has-content' : ''}" id="output-ta"
+          placeholder="Pega aquí el output de ${s.gem}…"
+          oninput="onOutputChange(this)">${savedOutput}</textarea>
+        <div class="save-note">Se guarda automáticamente</div>
+      </div>`;
+
+    html += `</div></div>`;
+  } catch(err) {
+    html = `<div class="step-card"><div class="step-body" style="padding:20px">
+      <div style="color:var(--em);font-family:var(--font-mono);font-size:var(--text-sm);margin-bottom:8px">${s ? s.gem : 'Error'} — Paso ${currentStep + 1}</div>
+      <div style="color:var(--text2);font-size:var(--text-sm)">Error al cargar el paso: ${err.message}</div>
+    </div></div>`;
+    console.error('renderStep error:', err);
   }
-
-  // Output note
-  html += `<div class="sec-label" style="margin-top:14px">Qué guardar del output</div>
-      <div class="output-note"><span class="output-note-icon">→</span><span>${s.output_note}</span></div>`;
-
-  // Output textarea
-  html += `<div class="output-field-wrap" style="margin-top:12px">
-      <textarea class="output-textarea ${ss.outputs[currentStep] ? 'has-content' : ''}" id="output-ta"
-        placeholder="Pega aquí el output de ${s.gem}…"
-        oninput="onOutputChange(this)">${ss.outputs[currentStep] || ''}</textarea>
-      <div class="save-note">Se guarda automáticamente</div>
-    </div>`;
-
-  html += `</div></div>`;
 
   // ── Completion: summary + KPIs + related ─────────────────────────────────
   if (isLast) {

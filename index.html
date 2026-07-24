@@ -2047,8 +2047,16 @@ function buildSelector() {
 // ── Runner ──────────────────────────────────────────────
 function selectSystem(id) {
   currentSys = SYSTEMS.find(s => s.id === id);
+  // Always start at step 0 — clean entry every time
+  currentStep = 0;
+  // Initialize fresh state for this system
+  state[id] = {
+    step: 0,
+    checks: currentSys.steps.map(s => new Array(s.inputs.length).fill(false)),
+    outputs: new Array(currentSys.steps.length).fill('')
+  };
+  saveState();
   const ss = getSysState(id);
-  currentStep = ss.step;
   // Hide whichever screen was active
   document.getElementById('screen-select').classList.remove('active');
   document.getElementById('screen-orchestrator').classList.remove('active');
@@ -2061,9 +2069,20 @@ function selectSystem(id) {
 
 function goBack() {
   saveCurrentOutput();
+  // Reset current system state so next visit starts fresh
+  if (currentSys) {
+    delete state[currentSys.id];
+    saveState();
+    currentSys = null;
+    currentStep = 0;
+  }
+  // Clear step content to prevent stale display
+  const sv = document.getElementById('step-view');
+  if (sv) sv.innerHTML = '';
+  const so = document.getElementById('sys-overview');
+  if (so) so.innerHTML = '';
+
   document.getElementById('screen-runner').classList.remove('active');
-  // If came from selector, go back to selector; otherwise orchestrator
-  const selActive = document.getElementById('screen-select').innerHTML.trim().length > 0;
   if (window._cameFromSelector) {
     document.getElementById('screen-select').classList.add('active');
     buildSelector();
@@ -2083,8 +2102,13 @@ function saveCurrentOutput() {
 }
 
 function renderStep() {
+  if (!currentSys) return;
   const steps = currentSys.steps;
+  // Safety clamp — prevents out-of-bounds if state is stale
+  if (currentStep >= steps.length) currentStep = 0;
+  if (currentStep < 0) currentStep = 0;
   const s = steps[currentStep];
+  if (!s) return;
   const ss = getSysState(currentSys.id);
   const isLast = currentStep === steps.length - 1;
 

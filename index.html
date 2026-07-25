@@ -2547,7 +2547,7 @@ const ORC_SYSTEMS = {
   },
   4: {
     name: "Venta de productos físicos",
-    triggers: ["inmueble","inmuebles","casa","casas","apartamento","departamento","departamentos","propiedad","propiedades","vivienda","viviendas","bienes raíces","bienes raices","finca raíz","finca raiz","terreno","lote","oficina comercial","local comercial","arrendamiento","arriendo","alquiler de","suplemento","suplementos","vitamínico","vitaminas","vitamina","alimentos","comida","bebidas","bebida","calzado","zapatos","moda","ropa","cosméticos","cosmético","belleza","mascotas","artesanía","joyería","bisutería","accesorios","producto físico","productos físicos","tienda","inventario","ecommerce","e-commerce","catálogo","whatsapp business","envío","stock","físico","local","artículos","mercancía","producto natural","productos naturales","skincare","cuidado personal","promover suplemento","promover cosméticos","promover cosmético","promover calzado","promover ropa","promover alimentos","promover productos","producto de moda","vender suplemento","vender cosméticos","vender calzado"],
+    triggers: ["inmueble","inmuebles","casa","casas","apartamento","departamento","departamentos","propiedad","propiedades","vivienda","viviendas","bienes raíces","bienes raices","finca raíz","finca raiz","terreno","lote","oficina comercial","local comercial","arrendamiento","arriendo","alquiler de","suplemento","suplementos","vitamínico","vitaminas","vitamina","alimentos","comida","bebidas","bebida","calzado","zapatos","moda","ropa","cosméticos","cosmético","belleza","mascotas","artesanía","joyería","bisutería","accesorios","producto físico","productos físicos","tienda","inventario","ecommerce","e-commerce","catálogo","whatsapp business","envío","stock","físico","local","artículos","mercancía","producto natural","productos naturales","skincare","cuidado personal","crema","crema para la piel","crema facial","crema corporal","loción","serum","sérum","aceite esencial","aceite corporal","perfume","colonia","champú","shampoo","acondicionador","gel de ducha","jabón","jabones","exfoliante","mascarilla","tónico","contorno de ojos","protector solar","maquillaje","labial","pintalabios","rímel","base de maquillaje","producto de belleza","productos de belleza","cuidado de la piel","cuidado capilar","rutina de belleza","rutina skincare","aceite de argan","aceite de coco","colágeno","ácido hialurónico","retinol","niacinamida","producto artesanal","productos artesanales","comida saludable","alimento saludable","snack","café","té","infusión","vino","cerveza artesanal","miel","mermelada","aceite de oliva","panadería","repostería","dulces","chocolates","ropa deportiva","ropa de mujer","ropa de hombre","ropa de bebé","uniformes","calzado deportivo","tenis","sneakers","sandalias","botas","bolsos","carteras","mochilas","bisutería fina","anillos","pulseras","collares","aretes","pendientes","decoración","velas","difusor","plantas","macetas","libros físicos","agenda","cuaderno","papelería","juguetes","juguetes educativos","mascotas","alimento para mascotas","accesorios para mascotas","promover suplemento","promover cosméticos","promover cosmético","promover calzado","promover ropa","promover alimentos","promover productos","producto de moda","vender suplemento","vender cosméticos","vender calzado","vender crema","vender loción"],
     diag: "El usuario vende un producto físico que compite por precio y necesita diferenciación, identidad de marca, copy para todos los puntos de contacto y flujo de ventas.",
     gems: [
       {name:"Aura", role:"Segmentos y nichos invisibles"},
@@ -2790,6 +2790,13 @@ function orcResolveDiag() {
   const q1 = orcDiagAnswers['q1'];
   const q2 = orcDiagAnswers['q2'];
   const q3 = orcDiagAnswers['q3'];
+  // Re-score original input to help break ties
+  const inputEl = document.getElementById('orc-input');
+  const inputText = inputEl ? inputEl.value : '';
+  const reScores = orcScore(inputText);
+  const topRescored = Object.entries(reScores).sort((a,b)=>b[1]-a[1]);
+  const hasPhysical = (reScores[4] || 0) > 0;
+  const hasService  = (reScores[3] || 0) > 0;
 
   let sysId = 1; // default
 
@@ -2798,15 +2805,17 @@ function orcResolveDiag() {
   } else if (q1 === 'none' && (q2 === 'no' || !q2)) {
     sysId = 5; // sin producto ni audiencia → marca personal
   } else if (q1 === 'creating' && q2 === 'no') {
-    sysId = 5; // creando producto, sin audiencia → construir marca primero
+    sysId = 5; // creando, sin audiencia → marca personal primero
   } else if (q1 === 'creating' || q1 === 'none') {
-    sysId = 1; // en creación → lanzamiento
-  } else if (q1 === 'defined' && q2 === 'yes' && q3 === 'no') {
-    sysId = 3; // tiene servicio y audiencia pero sin funnel → servicios profesionales
+    sysId = hasPhysical ? 4 : 1; // producto físico vs digital
   } else if (q1 === 'defined' && q3 === 'partial') {
-    sysId = 7; // tiene partes sueltas → optimizar
-  } else {
-    sysId = 1;
+    sysId = 7; // partes sueltas → optimizar funnel
+  } else if (q1 === 'defined') {
+    // Producto definido — distinguir tipo
+    if (hasPhysical) sysId = 4;
+    else if (hasService) sysId = 3;
+    else if (q2 === 'yes') sysId = 3; // audiencia + servicio → profesionales
+    else sysId = 1; // producto digital por defecto
   }
 
   orcRecommendedId = sysId;

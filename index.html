@@ -1231,8 +1231,8 @@ const SYSTEMS = [
   {
     id:1, name:"Lanzamiento de producto digital",
     problem:"Tienes conocimiento o experiencia pero no tienes un producto digital estructurado, con oferta definida y sistema de ventas listo para ejecutar.",
-    result:"Producto digital completo (ebook o curso) con oferta Grand Slam, landing page, VSL y secuencia de cierre por WhatsApp.",
-    kpis:{q:"Tasa de conversión de landing (benchmark 3–8%), ventas en primeras 72h, tasa de respuesta en WhatsApp.",c:"Claridad del mensaje (test con 3 personas externas), coherencia entre la promesa del VSL y el contenido del producto."},
+    result:"Producto digital completo (ebook o curso), diferenciado del resto del mercado, con oferta Grand Slam, landing page, VSL, estrategia de tráfico y secuencia de cierre por WhatsApp.",
+    kpis:{q:"Tasa de conversión de landing (benchmark 3–8%), ventas en primeras 72h, tasa de respuesta y cierre en WhatsApp.",c:"Claridad del mensaje (test con 3 personas externas), coherencia entre la promesa del VSL y el contenido del producto."},
     steps:[
       {gem:"Aura",title:"Buyer Persona y tabla de objeciones del producto",
        desc:"Aura construye el Buyer Persona con nivel de consciencia Schwartz, mapa de dolores y tabla de objeciones con raíz psicológica. Es el insumo base de todas las fases siguientes.",
@@ -1245,64 +1245,81 @@ Transformación que promete: [resultado].
 
 Ejecuta tu entrevista diagnóstica. Construye el Buyer Persona con nivel de consciencia Schwartz, mapa de dolores y tabla de objeciones con raíz psicológica.`,
        checkpoint:"¿Puedes describir el dolor #1 del cliente en una frase sin jerga? Si no, profundiza antes de avanzar.",
-       output_note:"Guarda el Buyer Persona completo con nivel de consciencia y tabla de objeciones — input de ProductMaster y de todas las fases siguientes."},
+       output_note:"Guarda el Buyer Persona completo con nivel de consciencia y tabla de objeciones — input de Kratos y todas las fases siguientes."},
 
-      {gem:"ProductMaster",title:"Estructura del producto y hoja de ruta",
-       desc:"ProductMaster diseña la arquitectura completa. Ruta Curso: produce scripts, estructura modular y ejercicios. Ruta Ebook: entrega índice validado, Promesa de Transformación y Método de Ruta.",
-       inputs:["Buyer Persona de Aura","Descripción del tema del producto","Formato elegido: ebook o curso","Restricciones de producción: tiempo, herramientas, nivel técnico"],
+      {gem:"Kratos",title:"Diferenciación del producto antes de estructurarlo",
+       desc:"Kratos construye la PUV del producto antes de estructurarlo. Sin diferenciación en esta fase, el producto se construiría sin un 'por qué el tuyo y no otro' — el mismo defecto que Sistema 7 diagnostica como causa raíz en funnels ajenos.",
+       inputs:["Buyer Persona de Aura","Descripción del tema del producto","Competidores o referentes del mercado si los conoces","Qué te diferencia: experiencia, metodología, perspectiva propia"],
+       prompt:`Necesito la PUV de mi producto digital antes de estructurarlo.
+
+Buyer Persona: [de Aura].
+Tema del producto: [descripción].
+Competidores o referentes: [si los conoces, o indica que no tienes esta info].
+Mi diferencial: [experiencia, metodología o perspectiva propia].
+
+Diagnóstico de 4-5 turnos. Aplica los tres filtros internos. Entrega PUV en 3 formatos: pitch, titular web y narrativa — informa la estructura del producto en la fase siguiente.`,
+       output_note:"Guarda la PUV en los 3 formatos — input de ProductMaster para orientar la estructura del producto."},
+
+      {gem:"ProductMaster",title:"Estructura del producto orientada por la PUV",
+       desc:"ProductMaster diseña la arquitectura completa. Ruta Curso: produce scripts, módulos y ejercicios. Ruta Ebook: entrega índice validado + Promesa de Transformación. Ejecuta solo hasta Fase 4 — el VSL y los anuncios los cubren Gems especializados más adelante en este pipeline.",
+       inputs:["Buyer Persona de Aura","PUV de Kratos","Descripción del tema del producto","Formato elegido: ebook o curso y restricciones de producción"],
        prompt:`Necesito diseñar mi producto digital.
 
 Formato: [ebook / curso].
-Tema: [tema].
-Buyer Persona: [output de Aura].
-Transformación prometida: [resultado].
+Tema: [descripción].
+Buyer Persona: [de Aura].
+PUV: [de Kratos].
 
-Ruta Curso: produce scripts de video, estructura modular y ejercicios por módulo.
+Ejecuta solo hasta la Fase 4 (Diseño Instruccional / Generación de Contenido) — el VSL y los anuncios los cubren Gems especializados más adelante en este pipeline, no los generes aquí.
+
+Ruta Curso: produce scripts de video, estructura modular y ejercicios.
 Ruta Ebook: entrega índice validado + Promesa de Transformación + Método de Ruta.`,
-       checkpoint:"¿Cada módulo o capítulo resuelve un problema específico del Buyer Persona?",
+       checkpoint:"¿Cada módulo o capítulo resuelve un problema específico del Buyer Persona y está alineado con la PUV de Kratos?",
        output_note:"Ruta Curso: guarda el producto completo con scripts → pasa a Alex. Ruta Ebook: guarda índice + Promesa de Transformación → pasa a EbookPro."},
 
       {gem:"EbookPro",title:"Contenido completo del ebook — solo ruta Ebook",
-       desc:"EbookPro redacta el contenido sección por sección con aprobación explícita antes de avanzar. Si elegiste ruta Curso, omite este paso.",
-       inputs:["Índice validado de ProductMaster","Promesa de Transformación de ProductMaster","Buyer Persona de Aura","Persona narrativa, estilo de referencia, tono y destino del ebook"],
+       desc:"EbookPro redacta el contenido sección por sección con aprobación explícita antes de avanzar. Si elegiste ruta Curso, avanza directamente a Alex. Usa el índice y la Promesa de Transformación de ProductMaster en vez de repetir el diagnóstico de tema y lector.",
+       inputs:["Índice validado de ProductMaster","Promesa de Transformación de ProductMaster","Buyer Persona de Aura","Persona narrativa, tono y destino del ebook"],
        prompt:`Voy a redactar mi ebook.
 
-Índice: [índice de ProductMaster].
+Índice: [de ProductMaster].
 Promesa de Transformación: [de ProductMaster].
 Buyer Persona: [de Aura].
 Persona narrativa: [primera / segunda / tercera persona].
 Tono: [educativo / directo / conversacional].
 Destino: [descarga gratuita / producto de pago / lead magnet].
 
-Redacta sección por sección. Espera mi aprobación antes de avanzar a la siguiente.`,
+Usa el índice y la Promesa de Transformación ya definidos — no repitas el diagnóstico de tema y lector. Redacta sección por sección. Espera mi aprobación antes de avanzar.`,
        checkpoint:"¿Cada sección cierra con un punto de acción concreto? Si no, el ebook informa pero no transforma.",
        output_note:"Guarda el contenido completo listo para maquetar — pasa a Alex junto con el Buyer Persona."},
 
       {gem:"Alex",title:"Oferta Grand Slam con precio, bonos y garantía",
        desc:"Alex aplica la Ecuación de Valor (Flujo A si tienes oferta existente, Flujo B desde cero). Construye el paquete con resultado prometido, entregables, bonos, garantía, precio anclado y nombre con el método M-A-G-I-C.",
-       inputs:["Producto terminado (de ProductMaster o EbookPro)","Buyer Persona de Aura","Si tienes oferta existente o partes desde cero","Precio objetivo aproximado"],
+       inputs:["Producto terminado (de ProductMaster o EbookPro)","PUV de Kratos","Buyer Persona de Aura","Precio objetivo aproximado y si tienes oferta existente o partes desde cero"],
        prompt:`Necesito construir mi Oferta Grand Slam.
 
 Producto: [descripción del producto terminado].
+PUV: [de Kratos].
 Buyer Persona: [de Aura].
 Punto de partida: [tengo oferta existente / parto desde cero].
 Precio objetivo: [precio].
 
-Aplica la Ecuación de Valor. Construye: resultado prometido, entregables, bonos, garantía, precio anclado con justificación y nombre diferenciador (método M-A-G-I-C).`,
+Flujo A si tengo oferta existente, Flujo B si parto desde cero. Aplica la Ecuación de Valor. Construye: resultado prometido, entregables, bonos, garantía, precio anclado con justificación y nombre diferenciador (método M-A-G-I-C).`,
        checkpoint:"¿El prospecto que lea la oferta se sentiría ilógico rechazándola? Si no, el tiempo o esfuerzo percibido sigue siendo alto.",
-       output_note:"Guarda la Oferta Grand Slam completa — input de LandingPro y VSLMaster."},
+       output_note:"Guarda la Oferta Grand Slam completa — input de LandingPro, VSLMaster y VentasFlow."},
 
       {gem:"LandingPro",title:"Copy completo de la landing page",
        desc:"LandingPro clasifica el tipo de landing según precio y producto, selecciona el framework con justificación y redacta en tres bloques: Hero, cuerpo persuasivo y cierre.",
-       inputs:["Oferta Grand Slam de Alex","Buyer Persona de Aura","Tabla de objeciones de Aura","Prueba social disponible: testimonios, resultados o casos"],
+       inputs:["Oferta Grand Slam de Alex","Buyer Persona de Aura con tabla de objeciones","PUV de Kratos","Prueba social disponible: testimonios, resultados, casos"],
        prompt:`Necesito el copy completo de mi landing page.
 
 Oferta Grand Slam: [de Alex].
 Buyer Persona: [de Aura].
 Tabla de objeciones: [de Aura].
+PUV: [de Kratos].
 Prueba social: [testimonios o resultados disponibles].
 
-Clasifica el tipo de landing. Declara el framework con justificación. Redacta en tres bloques: Hero (título, subtítulo, CTA), Cuerpo persuasivo (problema, solución, prueba social, detalles del producto), Cierre (CTA final, FAQ, garantía). Entrega en Markdown.`,
+Clasifica el tipo de landing. Declara el framework con justificación. Redacta en tres bloques: Hero (título, subtítulo, CTA), Cuerpo persuasivo (problema, solución, prueba social, detalles), Cierre (CTA final, FAQ, garantía). Entrega en Markdown.`,
        checkpoint:"¿Un externo entiende qué compra, para quién es y por qué importa en menos de 10 segundos? Si no, el Hero falla.",
        output_note:"Guarda el copy completo en Markdown — lo usan VSLMaster y VentasFlow."},
 
@@ -1322,6 +1339,34 @@ Duración objetivo: [minutos].
 Presenta el brief completo para validación. Al confirmar, produce el guión con separación VISUAL/AUDIO por sección y duración por bloque.`,
        output_note:"Guarda el guión VSL en Markdown. Es el activo de video del lanzamiento."},
 
+      {gem:"AdsStrategy",title:"Estrategia de tráfico pago — OPCIONAL si usas pauta",
+       desc:"Activar solo si tu canal de captación incluye pauta paga. Si tu modelo es 100% orgánico o de base de datos propia, avanza directamente a AdsMaster o a VentasFlow. AdsStrategy cubre el gap de tráfico pago — el sistema entregaba conversión completa sin mecanismo para llevarle tráfico.",
+       inputs:["Oferta Grand Slam de Alex","Presupuesto disponible para pauta","Plataforma: Meta Ads, TikTok Ads o Google Ads","Objetivo de campaña: tráfico a landing, leads o ventas directas"],
+       prompt:`Necesito la estrategia de tráfico pago para mi lanzamiento de producto digital.
+
+Oferta: [de Alex].
+PUV: [de Kratos].
+Buyer Persona: [de Aura].
+Presupuesto disponible: [monto y período].
+Plataforma: [Meta Ads / TikTok Ads / Google Ads].
+Objetivo: [tráfico a landing / leads / ventas directas].
+
+Entrega: segmentación de audiencias, estructura de presupuesto por fase (prospecting y retargeting), matriz de ángulos creativos con hipótesis explícitas y calendario de testing.`,
+       output_note:"Guarda la matriz de ángulos creativos — AdsMaster la convierte en creativos listos para producción."},
+
+      {gem:"AdsMaster",title:"Creativos de anuncios listos para producción — OPCIONAL si usas pauta",
+       desc:"Activar solo si activaste AdsStrategy. AdsMaster convierte la estrategia en creativos reales: guiones de video, posts estáticos o carruseles por ángulo, con hook, overlays, CTA y versiones A/B.",
+       inputs:["Matriz de ángulos creativos de AdsStrategy","Plataforma: Meta Ads o TikTok Ads","Formato preferido: video corto, post estático o carrusel","Assets visuales disponibles: fotos del producto, videos de demostración"],
+       prompt:`Necesito los creativos de anuncios para mi lanzamiento.
+
+Matriz de ángulos: [de AdsStrategy].
+Plataforma: [Meta Ads / TikTok Ads].
+Formato: [video corto / post estático / carrusel].
+Assets disponibles: [descripción de fotos o videos que tengo].
+
+Genera el creativo completo por ángulo: guion con timing, hook visual y verbal, texto en pantalla, CTA y caption. Entrega versiones A y B por ángulo para testing.`,
+       output_note:"Guarda los creativos por ángulo — listos para subir a la plataforma. Continúa con VentasFlow."},
+
       {gem:"VentasFlow",title:"Flujo de 12 momentos para cerrar el lanzamiento",
        desc:"VentasFlow genera el flujo de 12 momentos (M1–M12) con lógica condicional Si/Entonces, calibrado al perfil de voz. Incluye remarketing, downsell y order bump.",
        inputs:["Oferta Grand Slam de Alex","Tabla de objeciones de Aura","Perfil de voz: 1 Directo, 2 Consultivo, 3 Autoridad, 4 Minimalista","Link de pago, horarios de atención y precio en moneda local"],
@@ -1330,9 +1375,7 @@ Presenta el brief completo para validación. Al confirmar, produce el guión con
 Oferta: [de Alex].
 Objeciones clave: [de Aura].
 Perfil de voz: [1 Directo / 2 Consultivo / 3 Autoridad / 4 Minimalista].
-Link de pago: [link].
-Horarios: [horarios].
-Precio y moneda: [precio y moneda local].
+Link de pago: [link]. Horarios: [horarios]. Precio y moneda: [precio y moneda local].
 
 Produce el flujo de 12 momentos (M1-M12) con lógica Si/Entonces. Incluye remarketing, downsell y order bump.`,
        output_note:"Secuencia completa lista para copiar en GHL o envío manual. Sistema 1 completo."}
@@ -1341,90 +1384,117 @@ Produce el flujo de 12 momentos (M1-M12) con lógica Si/Entonces. Incluye remark
   {
     id:2, name:"Venta de producto digital como afiliado",
     problem:"Quieres vender productos de terceros pero no tienes ángulo de venta propio, contenido diferenciador ni secuencia de seguimiento.",
-    result:"Ecosistema con ángulo diferenciador, página puente, contenido en video y secuencia de cierre.",
+    result:"Oferta de afiliado validada antes de construir nada, con ecosistema diferenciador, página puente, contenido en video y secuencia de cierre.",
     kpis:{q:"CTR del link de afiliado, tasa de conversión de página puente, comisiones mensuales.",c:"Los prospectos te buscan a ti para comprar, no al producto directamente."},
     steps:[
+      {gem:"Lexis",title:"Validación del nicho antes de construir el funnel",
+       desc:"Lexis mapea el panorama competitivo del nicho y evalúa si el problema tiene demanda real. Si señala saturación alta sin espacio de diferenciación, reconsiderar la oferta antes de continuar. Nota: Lexis no tiene acceso a datos de marketplace en tiempo real — no puede validar gravity/EPC reales. Su función es investigación conceptual, no métricas de plataforma.",
+       inputs:["Nicho o tema del producto de afiliado","Plataforma de afiliación: Hotmart, ClickBank, otra","Ángulo o perspectiva que tienes sobre este nicho","Productos similares que ya conoces en el mercado"],
+       prompt:`Necesito investigar el nicho de este producto de afiliado antes de construir todo.
+
+Nicho/tema: [descripción].
+Plataforma: [Hotmart / ClickBank / otra].
+Mi ángulo inicial: [perspectiva o enfoque que tengo].
+Productos similares que conozco: [lista o indica que no tienes info].
+
+Mapea el campo competitivo: qué ángulos ya usan otros afiliados, qué tan saturado está el nicho, qué espacios de diferenciación existen. Evalúa cualitativamente si hay demanda real y sostenida. Señala si hay saturación alta sin espacio de diferenciación.`,
+       checkpoint:"¿Lexis identifica un espacio de diferenciación viable? Si señala saturación sin ángulo propio, reconsidera la oferta antes de continuar con las fases siguientes.",
+       output_note:"Guarda el mapeo competitivo y la evaluación de demanda — informa la diferenciación de Kratos."},
+
       {gem:"Aura",title:"Perfil del comprador del producto que vas a promover",
        desc:"Aura construye el Buyer Persona con nivel de consciencia Schwartz, mapa de objeciones específicas hacia productos de afiliados y triggers de compra.",
        inputs:["Descripción del producto de afiliado","Plataforma de afiliación: Hotmart, ClickBank, otra","Tipo de comprador al que quieres llegar","Precio del producto y comisión"],
        prompt:`Necesito el Buyer Persona del comprador de este producto de afiliado.
 
-Producto: [descripción].
-Plataforma: [plataforma].
-Tipo de comprador: [descripción].
-Precio: [precio].
+Producto: [descripción]. Plataforma: [plataforma].
+Tipo de comprador: [descripción]. Precio: [precio].
 
-Construye el Buyer Persona con nivel de consciencia Schwartz, mapa de objeciones hacia productos de afiliados y triggers de compra.`,
-       output_note:"Guarda el Buyer Persona con nivel de consciencia y tabla de objeciones — input de Schwartz y todas las fases siguientes."},
+Buyer Persona con nivel de consciencia Schwartz, mapa de objeciones hacia productos de afiliados y triggers de compra.`,
+       output_note:"Guarda el Buyer Persona con nivel de consciencia y objeciones — input de Schwartz y todas las fases siguientes."},
 
       {gem:"Schwartz",title:"Nivel de consciencia y bloque HANDOFF para Kratos",
-       desc:"Schwartz profundiza el diagnóstico de nivel de consciencia y genera el bloque HANDOFF estructurado. Cópialo y pégalo al abrir Kratos.",
-       inputs:["Buyer Persona de Aura con nivel de consciencia","Descripción del producto de afiliado","Canal de captación principal: Instagram, LinkedIn, YouTube, email","Nivel de consciencia aproximado de tu audiencia"],
+       desc:"Schwartz diagnostica el nivel de consciencia de la audiencia y genera el bloque HANDOFF estructurado. Cópialo y pégalo al abrir Kratos.",
+       inputs:["Buyer Persona de Aura con nivel de consciencia","Descripción del producto de afiliado","Canal de captación principal: Instagram, LinkedIn, YouTube, email","Mapeo competitivo de Lexis"],
        prompt:`Necesito calibrar el mensaje para este funnel de afiliado.
 
-Buyer Persona: [de Aura].
-Producto: [descripción].
-Canal de captación: [canal].
+Buyer Persona: [de Aura]. Producto: [descripción].
+Canal de captación: [canal]. Contexto de competencia: [hallazgos de Lexis].
 
-Profundiza el diagnóstico de nivel de consciencia. Entrega estrategia de mensajería: gancho, ángulo emocional, tipo de contenido, canal prioritario y error a evitar. Genera el bloque HANDOFF para Kratos.`,
+Diagnóstico de nivel de consciencia. Estrategia de mensajería: gancho, ángulo emocional, tipo de contenido, canal prioritario y error a evitar. Genera el bloque HANDOFF para Kratos.`,
        checkpoint:"¿Tu contenido habla al nivel correcto? Si la audiencia no sabe que tiene el problema, no puedes empezar hablando del producto.",
        output_note:"Copia el bloque HANDOFF completo — pégalo como primer mensaje al abrir Kratos."},
 
       {gem:"Kratos",title:"Por qué comprarte a ti y no al vendedor directamente",
-       desc:"Kratos ejecuta diagnóstico de 4-5 turnos y aplica tres filtros internos (test del competidor, test del ¿y qué?, test del espejo). Entrega 3 variaciones de PUV y el bono exclusivo.",
-       inputs:["Bloque HANDOFF de Schwartz — pégalo al abrir la sesión","Buyer Persona de Aura","Lo que puedes añadir: bono exclusivo, experiencia personal, acceso especial","Competidores afiliados del mismo producto (si los conoces)"],
+       desc:"Kratos ejecuta diagnóstico de 4-5 turnos y aplica tres filtros internos. Construye el ángulo diferenciador como afiliado, integrado con el mapeo competitivo de Lexis para no repetir lo que otros afiliados ya usan.",
+       inputs:["Bloque HANDOFF de Schwartz — pégalo al abrir la sesión","Buyer Persona de Aura","Lo que puedes añadir: bono exclusivo, experiencia personal, acceso especial","Hallazgos de Lexis sobre ángulos ya usados por otros afiliados"],
        prompt:`[Pega aquí el bloque HANDOFF de Schwartz]
 
 Necesito mi ángulo diferenciador como afiliado de [producto].
 
 Buyer Persona: [de Aura].
 Lo que puedo añadir: [bono, experiencia, acceso exclusivo].
-Competidores afiliados: [si los conoces].
+Ángulos que ya usan otros afiliados: [de Lexis].
 
-Diagnóstico de 4-5 turnos. Aplica el test del competidor, el test del "¿y qué?" y el test del espejo. Entrega 3 variaciones de PUV con justificación + bono exclusivo.`,
-       checkpoint:"¿Un externo entiende en 5 segundos por qué comprarte a ti y no al vendedor directamente?",
-       output_note:"Guarda la PUV diferenciadora y el bono exclusivo — son el eje de todo el copy que sigue."},
+Diagnóstico de 4-5 turnos. Test del competidor, test del "¿y qué?" y test del espejo. Entrega 3 variaciones de PUV + bono exclusivo. Asegúrate de no repetir ángulos que Lexis identificó como saturados.`,
+       checkpoint:"¿Un externo entiende en 5 segundos por qué comprarte a ti y no al vendedor directamente? ¿Tu ángulo es distinto a los que Lexis encontró en el mercado?",
+       output_note:"Guarda la PUV diferenciadora y el bono exclusivo — eje de todo el copy y los creativos siguientes."},
+
+      {gem:"AdsStrategy",title:"Estrategia de tráfico pago para el funnel — OPCIONAL",
+       desc:"Activar solo si tu canal de captación incluye pauta paga. Si tu modelo es 100% orgánico, avanza directamente a CopyMaster. Genera la segmentación y los ángulos creativos que AdsMaster convertirá en creativos reales.",
+       inputs:["PUV de Kratos y bono exclusivo","Buyer Persona de Aura","Presupuesto disponible y plataforma: Meta Ads o TikTok Ads","Objetivo: tráfico a página puente o conversión directa"],
+       prompt:`Estrategia de tráfico pago para mi funnel de afiliado.
+
+PUV como afiliado: [de Kratos]. Bono exclusivo: [de Kratos].
+Buyer Persona: [de Aura]. Presupuesto: [monto]. Plataforma: [plataforma].
+Objetivo: [tráfico a página puente / conversión directa].
+
+Segmentación de audiencias, estructura de presupuesto y matriz de ángulos creativos basada en la PUV diferenciadora.`,
+       output_note:"Guarda la matriz de ángulos — AdsMaster la convierte en creativos listos para producción."},
+
+      {gem:"AdsMaster",title:"Creativos de anuncios para el funnel — OPCIONAL",
+       desc:"Activar solo si activaste AdsStrategy. Convierte la matriz de ángulos en creativos completos con hook, guion, overlays, CTA y versiones A/B.",
+       inputs:["Matriz de ángulos de AdsStrategy","Plataforma: Meta Ads o TikTok Ads","Formato: video corto, post estático o carrusel","Página puente o link de afiliado al que apunta el creativo"],
+       prompt:`Creativos de anuncios para mi funnel de afiliado.
+
+Matriz de ángulos: [de AdsStrategy]. Plataforma: [plataforma].
+Formato: [video / post / carrusel]. Destino del clic: [página puente o link de afiliado].
+
+Creativo completo por ángulo: guion con timing, hook visual y verbal, texto en pantalla, CTA y caption. Versiones A y B para testing.`,
+       output_note:"Creativos listos para subir a la plataforma. Continúa con CopyMaster para el kit de copy orgánico."},
 
       {gem:"CopyMaster",title:"Página puente, emails de nurturing y pieza de autoridad",
        desc:"CopyMaster redacta las 3 piezas del funnel seleccionando frameworks según el nivel de consciencia de Schwartz. Pega el Buyer Persona y la PUV al abrir la sesión.",
        inputs:["PUV de Kratos — pégala al abrir la sesión","Buyer Persona de Aura — pégalo al abrir la sesión","Nivel de consciencia y ángulo emocional de Schwartz","Tabla de objeciones de Aura"],
        prompt:`[Pega aquí el Buyer Persona de Aura y la PUV de Kratos]
 
-Necesito el kit de copy para mi funnel de afiliado.
+Kit de copy para mi funnel de afiliado.
 
-Mi PUV como afiliado: [de Kratos].
-Bono exclusivo: [de Kratos].
-Nivel de consciencia: [de Schwartz].
-Objeciones principales: [de Aura].
+PUV como afiliado: [de Kratos]. Bono exclusivo: [de Kratos].
+Nivel de consciencia: [de Schwartz]. Objeciones: [de Aura].
 
-Redacta: 1) Página puente que pre-vende antes del clic. 2) Secuencia de 3-5 emails de nurturing. 3) Pieza de autoridad (review comparativa o caso de uso).`,
-       output_note:"Guarda las 3 piezas del funnel: página puente, emails y pieza de autoridad."},
+1) Página puente que pre-vende antes del clic. 2) Secuencia de 3-5 emails de nurturing. 3) Pieza de autoridad (review comparativa o caso de uso).`,
+       output_note:"Guarda las 3 piezas: página puente, emails y pieza de autoridad."},
 
-      {gem:"ReelPro",title:"Guión de video para atraer tráfico al funnel",
-       desc:"ReelPro produce guiones para grabación real con instrucciones de producción. Alternativa: UGC Video Prompt si prefieres video generado por IA (entrega guión + prompt para Sora). Elige según si grabas con talento real o generas con IA.",
-       inputs:["PUV de Kratos","Buyer Persona de Aura","Canal: Reels, TikTok o YouTube Shorts","Tipo de grabación: talento real (ReelPro) o video IA (UGC Video Prompt)"],
-       prompt:`Necesito guiones de video para atraer tráfico a mi funnel de afiliado.
+      {gem:"ReelPro",title:"Guión de video para atraer tráfico orgánico al funnel",
+       desc:"ReelPro produce guiones para grabación real. Alternativa: UGC Video Prompt para video generado por IA. Genera 2 versiones con hooks distintos para testing.",
+       inputs:["PUV de Kratos","Buyer Persona de Aura","Canal: Reels, TikTok o YouTube Shorts","Estilo: a cámara, voz en off o texto en pantalla"],
+       prompt:`Guiones de video para atraer tráfico orgánico a mi funnel de afiliado.
 
-PUV como afiliado: [de Kratos].
-Buyer Persona: [de Aura].
+PUV como afiliado: [de Kratos]. Buyer Persona: [de Aura].
 Canal: [Reels / TikTok / YouTube Shorts].
 Estilo: [a cámara / voz en off / texto en pantalla].
 
-Genera 2 versiones con hooks distintos (A y B) para testing. Incluye texto exacto, instrucciones de producción y texto en pantalla.`,
-       output_note:"Guarda los guiones A y B — el video es el principal driver de tráfico en afiliados."},
+Una pregunta de diagnóstico. 2 versiones con hooks distintos (A y B). Texto exacto, instrucciones de producción, texto en pantalla y cues de edición.`,
+       output_note:"Guarda los guiones A y B — el video es el principal driver de tráfico orgánico en afiliados."},
 
       {gem:"VentasFlow",title:"12 momentos desde el primer contacto hasta el cierre",
        desc:"VentasFlow genera el flujo de 12 momentos (M1–M12) desde el primer contacto hasta el seguimiento post-no-compra, con lógica condicional Si/Entonces.",
        inputs:["PUV de Kratos y bono exclusivo","Tabla de objeciones de Aura","Perfil de voz: 1 Directo, 2 Consultivo, 3 Autoridad, 4 Minimalista","Link de afiliado o página puente, horarios y moneda local"],
-       prompt:`Necesito la secuencia de cierre por WhatsApp para mi funnel de afiliado.
+       prompt:`Secuencia de cierre por WhatsApp para mi funnel de afiliado.
 
-PUV como afiliado: [de Kratos].
-Bono exclusivo: [de Kratos].
-Objeciones frecuentes: [de Aura].
-Perfil de voz: [1 / 2 / 3 / 4].
-Link de afiliado o página puente: [link].
-Horarios: [horarios].
-Moneda local: [moneda].
+PUV como afiliado: [de Kratos]. Bono exclusivo: [de Kratos].
+Objeciones: [de Aura]. Perfil de voz: [1/2/3/4].
+Link: [link de afiliado o página puente]. Horarios: [horarios]. Moneda: [moneda].
 
 Flujo de 12 momentos (M1-M12) con lógica condicional Si/Entonces.`,
        output_note:"Secuencia lista para copiar en GHL o envío manual. Sistema 2 completo."}
@@ -1433,202 +1503,246 @@ Flujo de 12 momentos (M1-M12) con lógica condicional Si/Entonces.`,
   {
     id:3, name:"Venta de servicios profesionales",
     problem:"Eres consultor, coach, asesor o freelancer y dependes de referidos o compites por precio porque no tienes posicionamiento claro ni sistema de captación.",
-    result:"Oferta de alto ticket, perfil de LinkedIn optimizado, contenido de autoridad, página de agendamiento y sistema de cierre entrenado.",
+    result:"Oferta de alto ticket, perfil de LinkedIn optimizado, contenido de autoridad, página de agendamiento, estrategia de captación y sistema de cierre entrenado.",
     kpis:{q:"Llamadas agendadas por mes, tasa de cierre, ticket promedio, mensajes entrantes.",c:"Ratio inbound/outbound — te buscan a ti, no al revés."},
     steps:[
       {gem:"Aura",title:"Cliente ideal y objeciones al servicio",
        desc:"Aura construye el Buyer Persona B2B/B2C con nivel de consciencia Schwartz y tabla de objeciones específicas a servicios de alto ticket.",
        inputs:["Descripción del servicio que ofreces","Tipo de cliente: B2B o B2C","Resultado concreto que produces (con métricas si tienes)","Precio actual o precio objetivo del servicio"],
-       prompt:`Necesito el Buyer Persona para mis servicios profesionales.
+       prompt:`Buyer Persona para mis servicios profesionales.
 
-Servicio: [descripción].
-Tipo de cliente: [B2B / B2C].
-Resultado que produzco: [resultado concreto con métrica].
-Precio: [precio].
+Servicio: [descripción]. Tipo de cliente: [B2B / B2C].
+Resultado que produzco: [resultado concreto con métrica si tienes]. Precio: [precio].
 
-Construye el Buyer Persona con nivel de consciencia Schwartz y tabla de objeciones al servicio: precio, tiempo, confianza, resultados esperados.`,
+Buyer Persona con nivel de consciencia Schwartz y tabla de objeciones al servicio: precio, tiempo, confianza, resultados esperados.`,
        checkpoint:"¿Puedes describir el problema que resuelves mejor que la mayoría sin usar el nombre de tu disciplina?",
        output_note:"Guarda el Buyer Persona con objeciones — input de Kratos y todas las fases siguientes."},
 
       {gem:"Kratos",title:"Propuesta de valor: resultado + para quién + en qué plazo",
        desc:"Kratos ejecuta diagnóstico de 4-5 turnos con tres filtros internos. Destila el diferenciador real: no 'soy coach certificado', sino el resultado específico para quién y en qué plazo.",
        inputs:["Servicio detallado con entregables","Buyer Persona de Aura","Un resultado concreto con cliente real (métricas y tiempo si tienes)","Tu mecanismo o enfoque diferenciador"],
-       prompt:`Necesito mi PUV como profesional de servicios.
+       prompt:`PUV como profesional de servicios.
 
-Servicio: [descripción detallada].
-Buyer Persona: [de Aura].
+Servicio: [descripción detallada]. Buyer Persona: [de Aura].
 Resultado real con cliente: [resultado con métrica y tiempo].
 Mi mecanismo: [cómo lo hago yo].
 
-Diagnóstico de 4-5 turnos. Aplica los tres filtros internos. Entrega PUV principal con justificación y dos alternativas con criterios de uso.`,
+Diagnóstico de 4-5 turnos. Tres filtros internos. PUV principal + dos alternativas con criterios de uso.`,
        checkpoint:"¿El mensaje nombra resultado específico, para quién y en qué plazo? Si faltan dos de los tres, regresa.",
-       output_note:"Guarda la PUV en 3 formatos: pitch, titular web, narrativa. Es el eje de LinkedIn, la oferta y el contenido."},
+       output_note:"Guarda la PUV en 3 formatos: pitch, titular web, narrativa. Eje de LinkedIn, la oferta y el contenido."},
 
       {gem:"Alex",title:"Estructura de la oferta de alto ticket",
        desc:"Alex aplica la Ecuación de Valor (Flujo A si tienes oferta existente, Flujo B desde cero). Construye el paquete con entregables, bonos estratégicos, garantía y precio anclado.",
        inputs:["PUV de Kratos","Descripción detallada del servicio con entregables","Si tienes oferta existente o partes desde cero","Precio actual o precio objetivo"],
-       prompt:`Necesito estructurar mi oferta de alto ticket.
+       prompt:`Oferta de alto ticket para mis servicios.
 
-PUV: [de Kratos].
-Servicio: [descripción con entregables].
-Punto de partida: [tengo oferta existente / parto desde cero].
-Precio objetivo: [precio].
+PUV: [de Kratos]. Servicio: [descripción con entregables].
+Punto de partida: [tengo oferta / parto desde cero]. Precio objetivo: [precio].
 
-Flujo A si tengo oferta existente, Flujo B si parto desde cero. Aplica la Ecuación de Valor. Construye: resultado prometido, entregables, bonos estratégicos, garantía, precio anclado con justificación.`,
+Flujo A si tengo oferta, Flujo B si parto desde cero. Ecuación de Valor. Construye: resultado prometido, entregables, bonos estratégicos, garantía, precio anclado con justificación.`,
        output_note:"Guarda la Oferta Grand Slam — la usan Brandlink, LandingPro y VentasFlow."},
 
       {gem:"Brandlink",title:"LinkedIn como herramienta de captación de clientes",
        desc:"Brandlink ejecuta el Framework UVP Architect™ en 4 bloques. Entrega 2 versiones de titular optimizado, secciones del perfil reescritas y plan de implementación.",
        inputs:["PUV de Kratos","Buyer Persona de Aura","Oferta de Alex (para coherencia del perfil)","3 logros concretos con métricas si los tienes"],
-       prompt:`Necesito optimizar mi perfil de LinkedIn para atraer clientes de alto ticket.
+       prompt:`Optimización del perfil de LinkedIn para atraer clientes de alto ticket.
 
-PUV: [de Kratos].
-Buyer Persona: [de Aura].
-Logros concretos: [logro 1 con métrica], [logro 2], [logro 3].
+PUV: [de Kratos]. Buyer Persona: [de Aura].
+Logros: [logro 1 con métrica], [logro 2], [logro 3].
 
-Framework UVP Architect™ en 4 bloques: diagnóstico de audiencia, identificación del diferenciador, construcción del titular, cohesión del perfil. Entrega 2 versiones de titular, secciones reescritas y plan de implementación.`,
-       output_note:"Guarda el titular elegido y las secciones — Copylink los usa como referencia de voz."},
+Framework UVP Architect™ en 4 bloques. Informe de Estrategia: 2 versiones de titular, secciones del perfil reescritas, plan de implementación.`,
+       output_note:"Guarda el titular elegido y las secciones reescritas — Copylink los usa como referencia de voz."},
 
       {gem:"Copylink",title:"Serie de 5 posts que posicionan tu expertise",
        desc:"Copylink opera en Modo 3 (serie de contenido). Diseña el arco de 5 posts con narrativa progresiva. Presenta primero los ganchos para aprobación, luego desarrolla cada post.",
        inputs:["PUV de Kratos","Buyer Persona de Aura","Titular y voz calibrada desde Brandlink","5 temas donde tienes perspectiva o experiencia real"],
-       prompt:`Necesito 5 posts de LinkedIn para posicionarme como referente en [tema].
+       prompt:`5 posts de LinkedIn para posicionarme como referente en [tema].
 
-PUV: [de Kratos].
-Audiencia: [de Aura].
+PUV: [de Kratos]. Audiencia: [de Aura].
 Voz calibrada: [titular y notas de Brandlink].
 Temas con perspectiva propia: [lista de 5 temas].
 
-Modo 3 (serie). Arco de 5 posts con narrativa progresiva. Primero los 5 ganchos para aprobación. Al confirmar, desarrolla cada post: Gancho → Re-gancho → Cuerpo → Cierre → CTA.`,
+Modo 3 (serie). Arco de 5 posts con narrativa progresiva. Primero los ganchos para aprobación. Al confirmar: Gancho → Re-gancho → Cuerpo → Cierre → CTA.`,
        output_note:"Guarda los 5 posts — son el contenido del primer mes de autoridad."},
 
       {gem:"LandingPro",title:"Página de agendamiento o aplicación para la llamada",
        desc:"LandingPro redacta la página de captura para agendar la llamada de descubrimiento o aplicar al servicio. Este punto de captura es estándar en servicios de alto ticket antes de la conversación de venta.",
        inputs:["Oferta Grand Slam de Alex","Buyer Persona de Aura","Tabla de objeciones de Aura","Tipo de CTA: agendar llamada o formulario de aplicación"],
-       prompt:`Necesito la página de agendamiento/aplicación para mi servicio.
+       prompt:`Página de agendamiento/aplicación para mi servicio de alto ticket.
 
-Oferta: [de Alex].
-Buyer Persona: [de Aura].
+Oferta: [de Alex]. Buyer Persona: [de Aura].
 Objeciones principales: [de Aura].
 CTA objetivo: [agendar llamada de descubrimiento / formulario de aplicación].
 
-Redacta el copy orientado a calificar y convertir prospectos antes de la llamada de venta.`,
+Copy orientado a calificar y convertir prospectos antes de la llamada de venta.`,
        output_note:"Guarda el copy de la página — es el punto de captura entre el contenido y la llamada de venta."},
 
-      {gem:"SalesSim",title:"Simulación de cierre con prospectos de alto ticket",
-       desc:"SalesSim simula conversaciones con fricción realista. Requiere 4 datos directos del usuario. Entrega puntuación, análisis de sentimiento y reescritura del peor mensaje.",
-       inputs:["Descripción del servicio con precio (de Alex)","Canal: WhatsApp, DM LinkedIn o llamada","La objeción más frecuente que ya escuchas en conversaciones reales","Perfil a simular: Curioso, Escéptico, Fantasma o Tiburón"],
-       prompt:`Quiero entrenar mi cierre para este servicio.
+      {gem:"AdsStrategy",title:"Captación paga de leads para el servicio — OPCIONAL",
+       desc:"Activar solo si vas a correr pauta de lead-gen. Si tu modelo es 100% orgánico vía LinkedIn, avanza a SalesSim. Genera la segmentación y los ángulos para atraer prospectos calificados de alto ticket.",
+       inputs:["Oferta de Alex","Buyer Persona de Aura","Presupuesto disponible y plataforma: Meta Ads, LinkedIn Ads o Google Ads","Objetivo: leads calificados para llamada de descubrimiento"],
+       prompt:`Estrategia de captación paga de leads para mi servicio de alto ticket.
 
-Servicio y precio: [de Alex].
-Canal: [WhatsApp / DM LinkedIn / llamada].
+Oferta: [de Alex]. PUV: [de Kratos]. Buyer Persona: [de Aura].
+Presupuesto: [monto]. Plataforma: [Meta Ads / LinkedIn Ads / Google Ads].
+Objetivo: [leads calificados para llamada de descubrimiento].
+
+Segmentación de audiencias, estructura de campaña y matriz de ángulos para captación de leads de servicio.`,
+       output_note:"Guarda la matriz de ángulos — AdsMaster la convierte en creativos listos para producción."},
+
+      {gem:"AdsMaster",title:"Creativos para captación de leads — OPCIONAL",
+       desc:"Activar solo si activaste AdsStrategy. Convierte la estrategia en creativos completos orientados a generar solicitudes de llamada de descubrimiento.",
+       inputs:["Matriz de ángulos de AdsStrategy","Plataforma: Meta Ads o LinkedIn Ads","Formato: video corto, post estático o carrusel","Página de agendamiento a la que apunta el anuncio"],
+       prompt:`Creativos para captación de leads de mi servicio.
+
+Matriz de ángulos: [de AdsStrategy]. Plataforma: [plataforma].
+Formato: [video / post / carrusel]. Destino: [página de agendamiento de LandingPro].
+
+Creativo completo por ángulo: hook, guion, CTA orientado a solicitar llamada. Versiones A y B para testing.`,
+       output_note:"Creativos listos para subir a la plataforma. Continúa con SalesSim."},
+
+      {gem:"SalesSim",title:"Simulación de cierre con prospectos de alto ticket",
+       desc:"SalesSim simula conversaciones con fricción realista con los 4 perfiles posibles. Entrega puntuación, análisis de sentimiento y reescritura del peor mensaje.",
+       inputs:["Descripción del servicio con precio (de Alex)","Canal: WhatsApp, DM LinkedIn o llamada","La objeción más frecuente que ya escuchas en conversaciones reales","Perfil a simular: Curioso, Escéptico, Fantasma o Tiburón"],
+       prompt:`Entrenamiento de cierre para este servicio de alto ticket.
+
+Servicio y precio: [de Alex]. Canal: [WhatsApp / DM LinkedIn / llamada].
 Objeción más frecuente que escucho: [objeción real].
 Perfil a simular: [Curioso / Escéptico / Fantasma / Tiburón].
 
-Simula con fricción realista. Al terminar: puntuación global, análisis de sentimiento del prospecto, momentos de falla y reescritura del peor mensaje.`,
+Simulación con fricción realista. Informe: puntuación global, análisis de sentimiento del prospecto, momentos de falla y reescritura del peor mensaje.`,
        checkpoint:"¿Tu puntuación supera 70/100 con el perfil Escéptico? Si no, los mensajes no resuelven la objeción de raíz.",
        output_note:"Guarda la puntuación y la reescritura del peor mensaje — VentasFlow los integra en los guiones."},
 
       {gem:"VentasFlow",title:"3 flujos de seguimiento: caliente, tibio y frío",
-       desc:"VentasFlow genera 3 flujos diferenciados con lógica condicional Si/Entonces para los 3 escenarios post-llamada: interesado que no cerró, indeciso que pidió tiempo, prospecto que no contestó.",
+       desc:"VentasFlow genera 3 flujos diferenciados con lógica condicional Si/Entonces para los 3 escenarios post-llamada.",
        inputs:["Oferta de Alex","Tabla de objeciones de Aura","Perfil de voz: 1 Directo, 2 Consultivo, 3 Autoridad, 4 Minimalista","Links de pago o agendamiento, horarios y moneda local"],
-       prompt:`Necesito 3 secuencias de seguimiento post-llamada por WhatsApp.
+       prompt:`3 secuencias de seguimiento post-llamada por WhatsApp.
 
-Servicio y precio: [de Alex].
-Objeciones clave: [de Aura].
+Servicio y precio: [de Alex]. Objeciones: [de Aura].
 Insights del cierre: [reescritura de SalesSim].
-Perfil de voz: [1 / 2 / 3 / 4].
-Links: [links].
-Horarios: [horarios]. Moneda: [moneda].
+Perfil de voz: [1/2/3/4]. Links: [links]. Horarios: [horarios]. Moneda: [moneda].
 
-3 flujos con lógica Si/Entonces: 1) Interesado pero no cerró. 2) Indeciso que pidió tiempo. 3) No contestó.`,
+3 flujos Si/Entonces: 1) Interesado pero no cerró. 2) Indeciso que pidió tiempo. 3) No contestó.`,
        output_note:"3 secuencias WhatsApp listas. Sistema 3 completo."}
     ]
   },
   {
     id:4, name:"Venta de productos físicos",
     problem:"Vendes un producto físico que compite por precio porque no tiene diferenciación clara, estrategia de contenido ni flujo de venta.",
-    result:"Marca posicionada con identidad visual, copy para todos los puntos de contacto, contenido en video y flujo de venta automatizado.",
+    result:"Marca posicionada con identidad visual y assets visuales reales, copy para todos los puntos de contacto, estrategia de tráfico pago y flujo de venta automatizado.",
     kpis:{q:"CPA, tasa de recompra, ROAS de ads, tasa de respuesta en WhatsApp.",c:"Los clientes buscan el producto por nombre de marca, no por categoría."},
     steps:[
       {gem:"Aura",title:"Segmentos y nichos invisibles del producto",
-       desc:"Aura identifica nichos invisibles y construye 2-3 Buyer Personas priorizadas por rentabilidad, con triggers emocionales y tabla de objeciones por perfil.",
+       desc:"Aura identifica nichos invisibles y construye 2-3 Buyer Personas priorizadas por rentabilidad con triggers emocionales y tabla de objeciones.",
        inputs:["Descripción del producto físico","Precio del producto","Canal de venta actual: tienda física, Instagram, WhatsApp, e-commerce","Mejores clientes actuales o perfil ideal"],
-       prompt:`Necesito segmentación profunda para mi producto físico.
+       prompt:`Segmentación profunda para mi producto físico.
 
 Producto: [nombre y categoría]. Precio: [precio].
-Canal actual: [canal]. Mejores clientes: [descripción].
+Canal actual: [canal]. Mejores clientes: [descripción o perfil ideal].
 
-Identifica nichos invisibles que la competencia ignora. Construye 2-3 Buyer Personas priorizadas por rentabilidad con triggers emocionales y tabla de objeciones. Integra nivel de consciencia Schwartz en cada perfil.`,
+2-3 Buyer Personas priorizadas por rentabilidad con triggers emocionales y tabla de objeciones. Nivel de consciencia Schwartz en cada perfil.`,
        output_note:"Guarda los 2-3 Buyer Personas con objeciones — input de Kratos y todas las fases siguientes."},
 
       {gem:"Kratos",title:"Beneficio tangible que rompe la guerra de precios",
        desc:"Kratos elimina el lenguaje genérico y encuentra el beneficio tangible específico que importa al Buyer Persona. PUV en 3 formatos: pitch, titular web y narrativa de marca.",
        inputs:["Producto con características o ingredientes específicos","Buyer Personas de Aura","Competidores principales y cómo se presentan","Tu proceso, ingrediente o atributo diferenciador real"],
-       prompt:`Necesito diferenciar mi producto físico.
+       prompt:`Diferenciación de mi producto físico.
 
 Producto: [nombre + características o ingredientes].
-Buyer Persona principal: [de Aura].
-Competidores y mensajes: [lista].
+Buyer Persona principal: [de Aura]. Competidores y mensajes: [lista].
 Mi diferencial: [ingrediente, proceso o atributo único].
 
-Elimina el lenguaje genérico. Encuentra el beneficio tangible que importa. PUV en 3 formatos: pitch, titular web, narrativa de marca.`,
+Elimina el lenguaje genérico. Beneficio tangible específico. PUV en 3 formatos: pitch, titular web, narrativa de marca.`,
        output_note:"Guarda el titular y la narrativa — Brandon los usa para la identidad y CopyMaster para el copy."},
 
       {gem:"Brandon",title:"Sistema visual completo de la marca",
        desc:"Brandon ejecuta entrevista de 4 preguntas y genera propuesta en 6 secciones: personalidad, paleta HEX, tipografía, tipo de logo, moodboard textual con referencias reales.",
        inputs:["PUV de Kratos","Buyer Persona principal de Aura","Sentimiento deseado: confianza, lujo, accesibilidad, natural u otro","Referentes visuales de marcas que admiras (opcional)"],
-       prompt:`Necesito la identidad visual de mi marca de producto físico.
+       prompt:`Identidad visual de mi marca de producto físico.
 
 PUV: [de Kratos]. Buyer Persona: [de Aura].
 Sentimiento deseado: [descripción]. Referentes: [opcional].
 
-Entrevista de 4 preguntas. Si alguna respuesta es vaga, aplica seguimiento binario. Propuesta en 6 secciones: personalidad, paleta HEX, tipografía justificada, tipo de logo, moodboard textual con referencias reales, ilustraciones de aplicación.`,
-       output_note:"Guarda el sistema visual completo — referencia para CopyMaster y ReelPro."},
+Entrevista de 4 preguntas. Si alguna respuesta es vaga, aplica seguimiento binario. Propuesta en 6 secciones: personalidad, paleta HEX, tipografía, tipo de logo, moodboard textual con referencias reales, ilustraciones de aplicación.`,
+       output_note:"Guarda el sistema visual completo — input de Pixel para generar los assets reales de imagen."},
 
-      {gem:"Schwartz",title:"Qué decir en cada canal según el nivel de consciencia",
-       desc:"Schwartz diagnostica el nivel de consciencia por canal y entrega estrategia de mensajería diferenciada. Genera el bloque HANDOFF para CopyMaster.",
+      {gem:"Pixel",title:"Prompts para generar los assets visuales del producto",
+       desc:"Pixel traduce el sistema visual de Brandon en prompts técnicos para Midjourney, DALL·E o Firefly. Brandon define la identidad en texto — Pixel es quien produce el asset de imagen real. En productos físicos, la decisión de compra depende más de fotografía de producto y creativos que en casi cualquier otro sistema.",
+       inputs:["Sistema visual de Brandon: paleta HEX, moodboard y personalidad","Tipos de imagen necesarios: fotografía de producto, mockups de empaque, gráficos para anuncios","Herramienta de generación: Midjourney, DALL·E, Firefly u otra","Plataformas donde se usarán: Instagram, TikTok, tienda online"],
+       prompt:`Prompts para generar los assets visuales de mi producto físico con IA.
+
+Sistema visual de Brandon: [paleta, moodboard, personalidad].
+Tipos de imagen: [fotografía de producto / mockups de empaque / gráficos para anuncios].
+Herramienta: [Midjourney / DALL·E / Firefly / otra].
+Plataformas de uso: [Instagram / TikTok / tienda online / anuncios].
+
+Genera los prompts técnicos optimizados para cada tipo de asset.`,
+       output_note:"Guarda los prompts y úsalos para generar los assets reales — AdsStrategy y CopyMaster los usan como referencia."},
+
+      {gem:"Schwartz",title:"Estrategia de mensaje diferenciada por canal",
+       desc:"Schwartz diagnostica el nivel de consciencia por canal y entrega estrategia de mensajería diferenciada. Genera el bloque HANDOFF para AdsStrategy y CopyMaster.",
        inputs:["Buyer Persona de Aura con nivel de consciencia","Canales de venta activos: Instagram, WhatsApp, tienda, ads","Si los clientes ya conocen el problema que resuelve el producto","Nivel de saturación del nicho: alto, medio o bajo"],
-       prompt:`Necesito calibrar el mensaje por canal para mi producto físico.
+       prompt:`Calibración del mensaje por canal para mi producto físico.
 
 Buyer Persona: [de Aura]. Canales activos: [lista].
 ¿Clientes conocen el problema?: [sí/no/parcialmente].
 Saturación del nicho: [alta/media/baja].
 
-Diagnóstico de nivel de consciencia por canal. Estrategia diferenciada: qué decir primero en cada canal, qué objeción atacar y con qué ángulo. Genera el bloque HANDOFF para CopyMaster.`,
-       output_note:"Copia el bloque HANDOFF — pégalo como primer mensaje al abrir CopyMaster."},
+Nivel de consciencia por canal. Estrategia diferenciada: qué decir primero, qué objeción atacar y con qué ángulo. Genera el bloque HANDOFF para AdsStrategy y CopyMaster.`,
+       output_note:"Copia el bloque HANDOFF — pégalo al abrir AdsStrategy y CopyMaster."},
+
+      {gem:"AdsStrategy",title:"Estrategia de tráfico pago para el producto — OPCIONAL",
+       desc:"Activar solo si tu canal principal incluye pauta paga (lo más frecuente en DTC/ecommerce). Si tu modelo es 100% orgánico, avanza a CopyMaster. Genera la segmentación y los ángulos creativos alineados con los assets visuales de Pixel.",
+       inputs:["Bloque HANDOFF de Schwartz","PUV de Kratos","Presupuesto disponible y plataforma: Meta Ads o TikTok Ads","Assets visuales generados con Pixel"],
+       prompt:`Estrategia de tráfico pago para mi producto físico.
+
+HANDOFF de Schwartz: [pega el bloque].
+PUV: [de Kratos]. Presupuesto: [monto]. Plataforma: [Meta Ads / TikTok Ads].
+Assets visuales disponibles: [descripción de los assets generados con Pixel].
+
+Segmentación de audiencias, estructura de presupuesto (prospecting y retargeting) y matriz de ángulos creativos alineada con los assets visuales.`,
+       output_note:"Guarda la matriz de ángulos — AdsMaster la convierte en creativos completos para producción."},
+
+      {gem:"AdsMaster",title:"Creativos de anuncios para el producto — OPCIONAL",
+       desc:"Activar solo si activaste AdsStrategy. Convierte la matriz en creativos completos: guion/post/carrusel con hook, overlays, CTA y versiones A/B, integrados con los assets visuales de Pixel.",
+       inputs:["Matriz de ángulos de AdsStrategy","Assets visuales de Pixel","Plataforma: Meta Ads o TikTok Ads","Formato: video de producto, post estático o carrusel de beneficios"],
+       prompt:`Creativos de anuncios para mi producto físico.
+
+Matriz de ángulos: [de AdsStrategy]. Assets de Pixel: [descripción].
+Plataforma: [Meta Ads / TikTok Ads]. Formato: [video / post / carrusel].
+
+Creativo completo por ángulo: guion con timing, hook visual y verbal, texto en pantalla, CTA y caption. Versiones A y B para testing. Integra los assets visuales de Pixel en las instrucciones de producción.`,
+       output_note:"Creativos listos para producción. Continúa con CopyMaster para el copy de la tienda y los emails."},
 
       {gem:"CopyMaster",title:"Copy para tienda online, ads y emails de recompra",
-       desc:"CopyMaster redacta las 3 piezas del ecosistema de venta seleccionando frameworks según el nivel de Schwartz. Pega el Buyer Persona y la PUV al abrir.",
+       desc:"CopyMaster redacta las 3 piezas del ecosistema de venta seleccionando frameworks según el nivel de Schwartz. Pega el bloque HANDOFF de Schwartz y la PUV de Kratos al abrir.",
        inputs:["Bloque HANDOFF de Schwartz — pégalo al abrir la sesión","PUV de Kratos — pégala al abrir la sesión","Buyer Persona de Aura","Identidad de Brandon (tono y personalidad)"],
        prompt:`[Pega aquí el bloque HANDOFF de Schwartz y la PUV de Kratos]
 
-Necesito el kit de copy para mi producto físico.
-
+Kit de copy para mi producto físico.
 Buyer Persona: [de Aura]. Tono de marca: [personalidad de Brandon].
 
 1) Ficha de producto para tienda online (SEO + conversión). 2) Copy para anuncios Meta/Instagram (3 variantes). 3) Secuencia de email de recompra.`,
        output_note:"Guarda el kit: fichas de producto, copy de ads y emails de recompra."},
 
       {gem:"ReelPro",title:"Guiones A y B para mostrar el producto en video",
-       desc:"ReelPro hace una sola pregunta de diagnóstico y genera 2 versiones con hooks distintos para testing. Alternativa: UGC Video Prompt para video generado por IA. Cada guión incluye texto exacto, instrucciones de producción y cues de edición.",
-       inputs:["PUV de Kratos","Buyer Persona principal de Aura","Plataforma: Instagram, TikTok o YouTube Shorts","Tipo: demostración, antes/después, testimonio, educativo u objeción"],
-       prompt:`Necesito guiones de video para mi producto físico.
+       desc:"ReelPro hace una sola pregunta de diagnóstico y genera 2 versiones con hooks distintos para testing. Alternativa: UGC Video Prompt para video generado por IA.",
+       inputs:["PUV de Kratos","Buyer Persona principal de Aura","Plataforma: Instagram, TikTok o YouTube Shorts","Tipo de contenido: demostración, antes/después, testimonio u objeción"],
+       prompt:`Guiones de video para mi producto físico.
 
 Producto y PUV: [de Kratos]. Buyer Persona: [de Aura].
-Plataforma: [plataforma]. Tipo de contenido: [tipo].
+Plataforma: [plataforma]. Tipo: [demostración / antes-después / testimonio / objeción].
 
-Una pregunta de diagnóstico. Luego 2 versiones completas con hooks distintos (A y B). Texto exacto, instrucciones de producción, texto en pantalla y cues de edición.`,
-       output_note:"Guarda los guiones A y B — listos para grabar o producir con IA."},
+Una pregunta de diagnóstico. 2 versiones con hooks distintos (A y B). Texto exacto, instrucciones de producción, texto en pantalla y cues de edición.`,
+       output_note:"Guarda los guiones A y B con instrucciones de producción — listos para grabar."},
 
       {gem:"VentasFlow",title:"12 momentos desde el primer contacto hasta el pedido",
        desc:"VentasFlow genera el flujo de 12 momentos (M1–M12) con lógica condicional: saludo, cualificación, presentación, objeciones, cierre y recuperación.",
        inputs:["Oferta del producto con precio","Tabla de objeciones de Aura","Perfil de voz: 1 Directo, 2 Consultivo, 3 Autoridad, 4 Minimalista","Link de catálogo o producto, horarios y moneda local"],
-       prompt:`Necesito el flujo de ventas por WhatsApp para mi producto físico.
+       prompt:`Flujo de ventas por WhatsApp para mi producto físico.
 
-Producto y precio: [descripción con precio].
-Objeciones: [de Aura]. Perfil de voz: [1/2/3/4].
-Link: [link]. Horarios: [horarios]. Moneda: [moneda].
+Producto y precio: [descripción con precio]. Objeciones: [de Aura].
+Perfil de voz: [1/2/3/4]. Link: [link]. Horarios: [horarios]. Moneda: [moneda].
 
 Flujo de 12 momentos (M1-M12): saludo, cualificación, presentación, objeciones, cierre y recuperación.`,
        output_note:"Secuencia lista para copiar o automatizar en GHL. Sistema 4 completo."}
@@ -1637,13 +1751,13 @@ Flujo de 12 momentos (M1-M12): saludo, cualificación, presentación, objeciones
   {
     id:5, name:"Construcción de marca personal desde cero",
     problem:"Tienes conocimiento y experiencia pero eres invisible digitalmente. No tienes posicionamiento, identidad visual ni estrategia de contenido.",
-    result:"Marca personal definida con identidad visual, assets de imagen, perfil de LinkedIn, contenido en video y primeros posts humanizados.",
-    kpis:{q:"Impresiones del perfil LinkedIn, engagement rate, mensajes entrantes de prospectos.",c:"Puedes explicar tu posicionamiento en 30 segundos sin dudar."},
+    result:"Marca personal definida con identidad visual, assets visuales reales, perfil de LinkedIn optimizado, contenido en video y primeros posts de autoridad humanizados — primera tracción de interés y conversaciones entrantes, no leads calificados ni conversión comercial todavía.",
+    kpis:{q:"Impresiones del perfil LinkedIn, engagement rate, mensajes entrantes.",c:"Puedes explicar tu posicionamiento en 30 segundos sin dudar. Si tu objetivo incluye monetizar, continúa con Sistema 3 (servicios) o Sistema 1 (producto digital)."},
     steps:[
       {gem:"Aura",title:"A quién le hablas y qué les mueve a seguirte",
        desc:"Aura construye el Buyer Persona de quien seguiría y le compraría a esta marca, con nivel de consciencia Schwartz, mapa de dolores y objeciones hacia contenido del nicho.",
        inputs:["Tema central de la marca personal","Tipo de monetización: servicios, productos o comunidad","Tu experiencia y habilidades principales","Plataforma principal: LinkedIn, Instagram, YouTube"],
-       prompt:`Necesito el Buyer Persona para mi marca personal.
+       prompt:`Buyer Persona para mi marca personal.
 
 Tema central: [tema]. Monetización: [tipo].
 Mi experiencia: [descripción]. Plataforma: [plataforma].
@@ -1652,89 +1766,85 @@ Perfil de quien seguiría y le compraría a esta marca. Nivel de consciencia Sch
        output_note:"Guarda el Buyer Persona completo — input de Kratos y todas las fases siguientes."},
 
       {gem:"Kratos",title:"Tu diferenciador real en una frase de 30 segundos",
-       desc:"Kratos extrae el diferenciador mediante diagnóstico conversacional de 4-5 turnos con tres filtros internos. Entrega PUV personal, bio de 3 líneas y elevator pitch de 30 segundos.",
+       desc:"Kratos extrae el diferenciador mediante diagnóstico de 4-5 turnos con tres filtros internos. Entrega PUV personal, bio de 3 líneas y elevator pitch de 30 segundos.",
        inputs:["Buyer Persona de Aura","Tu experiencia y habilidades","Un resultado concreto que hayas producido para alguien","Tu enfoque o perspectiva única en el tema"],
-       prompt:`Necesito el mensaje central de mi marca personal.
+       prompt:`Mensaje central de mi marca personal.
 
-Buyer Persona: [de Aura].
-Mi experiencia: [descripción]. Resultado concreto: [resultado].
-Mi enfoque único: [perspectiva o método propio].
+Buyer Persona: [de Aura]. Mi experiencia: [descripción].
+Resultado concreto: [resultado]. Mi enfoque único: [perspectiva o método propio].
 
-Diagnóstico de 4-5 turnos. Tres filtros internos. Entrega PUV personal, bio de 3 líneas y elevator pitch de 30 segundos.`,
+Diagnóstico de 4-5 turnos. Tres filtros internos. PUV personal, bio de 3 líneas y elevator pitch de 30 segundos.`,
        output_note:"Guarda la PUV, bio y elevator pitch — eje de LinkedIn, Brandon y el contenido."},
 
       {gem:"Brandon",title:"Paleta, tipografía y sistema visual de tu marca",
        desc:"Brandon ejecuta entrevista de 4 preguntas y genera propuesta en 6 secciones: personalidad, paleta HEX, tipografía, tipo de logo, moodboard textual con referencias aplicables.",
        inputs:["PUV de Kratos","Buyer Persona de Aura","Sentimiento que quieres evocar: confianza, innovación, cercanía, autoridad","Referentes visuales que te gustan (opcional)"],
-       prompt:`Necesito mi identidad visual como marca personal.
+       prompt:`Identidad visual de mi marca personal.
 
 PUV: [de Kratos]. Buyer Persona: [de Aura].
 Sentimiento deseado: [descripción]. Referentes: [opcional].
 
-Entrevista de 4 preguntas. Propuesta en 6 secciones: personalidad, paleta HEX, tipografía, tipo de logo, moodboard textual con referencias aplicables, guía de uso.`,
+Entrevista de 4 preguntas. Propuesta en 6 secciones: personalidad, paleta HEX, tipografía, tipo de logo, moodboard textual, guía de uso.`,
        output_note:"Guarda el sistema visual completo — input de Pixel para generar los assets reales."},
 
       {gem:"Pixel",title:"Prompts para generar tus assets de imagen con IA",
        desc:"Pixel traduce el sistema visual de Brandon en prompts técnicos listos para Midjourney o DALL·E. Brandon define la identidad en texto — Pixel es quien produce el asset de imagen real.",
-       inputs:["Sistema visual de Brandon: paleta HEX, moodboard y personalidad","Tipos de imagen que necesitas: foto de perfil, gráficos de apoyo, portadas","Herramienta de generación: Midjourney, DALL·E, Firefly u otra","Plataformas donde se usarán las imágenes"],
-       prompt:`Necesito prompts para generar mis assets de marca personal con IA.
+       inputs:["Sistema visual de Brandon: paleta HEX, moodboard y personalidad","Tipos de imagen necesarios: foto de perfil, gráficos de apoyo, portadas","Herramienta de generación: Midjourney, DALL·E, Firefly u otra","Plataformas de uso: LinkedIn, Instagram, YouTube"],
+       prompt:`Prompts para generar los assets visuales de mi marca personal con IA.
 
 Sistema visual de Brandon: [paleta, moodboard, personalidad].
-Tipos de imagen: [foto de perfil / gráficos de apoyo / portadas / otro].
-Herramienta: [Midjourney / DALL·E / Firefly / otra].
-Plataformas de uso: [LinkedIn / Instagram / YouTube].
+Tipos de imagen: [foto de perfil / gráficos / portadas].
+Herramienta: [Midjourney / DALL·E / Firefly]. Plataformas: [plataformas].
 
-Genera los prompts técnicos optimizados para cada tipo de asset.`,
-       output_note:"Guarda los prompts — úsalos para generar los assets visuales reales antes de publicar."},
+Prompts técnicos optimizados para cada tipo de asset.`,
+       output_note:"Guarda los prompts y úsalos para generar los assets reales antes de publicar."},
 
       {gem:"Brandlink",title:"LinkedIn como activo central de tu marca personal",
-       desc:"Brandlink ejecuta el Framework UVP Architect™ en 4 bloques. Entrega 2 versiones de titular, secciones del perfil reescritas, plan de cohesión y KPIs de seguimiento.",
+       desc:"Brandlink ejecuta el Framework UVP Architect™ en 4 bloques. Entrega 2 versiones de titular, secciones del perfil reescritas, plan de cohesión y KPIs.",
        inputs:["PUV de Kratos","Buyer Persona de Aura","Identidad visual de Brandon (tono y personalidad)","3 logros o resultados concretos de tu carrera"],
-       prompt:`Necesito optimizar mi perfil de LinkedIn para mi marca personal.
+       prompt:`Optimización del perfil de LinkedIn para mi marca personal.
 
-PUV: [de Kratos]. Audiencia: [de Aura].
-Logros: [logro 1], [logro 2], [logro 3].
+PUV: [de Kratos]. Audiencia: [de Aura]. Logros: [logro 1], [logro 2], [logro 3].
 
-Framework UVP Architect™ en 4 bloques. Informe de Estrategia: 2 versiones de titular, secciones reescritas, plan de cohesión y KPIs.`,
-       output_note:"Guarda el titular elegido y las secciones — Copylink los usa como referencia de voz."},
+Framework UVP Architect™ en 4 bloques. Informe: 2 versiones de titular, secciones reescritas, plan de cohesión y KPIs.`,
+       output_note:"Guarda el titular elegido y las secciones reescritas — Copylink los usa como referencia de voz."},
 
       {gem:"Copylink",title:"5 posts con tu voz calibrada para el primer mes",
-       desc:"Copylink opera en Modo 4 si tienes posts publicados (calibra tu voz) o Modo 3 si no. Presenta primero los ganchos para aprobación, luego desarrolla cada post.",
+       desc:"Copylink opera en Modo 4 si tienes posts publicados (calibra tu voz) o Modo 3 si no tienes. Presenta primero los ganchos para aprobación, luego desarrolla cada post.",
        inputs:["PUV de Kratos","Buyer Persona de Aura","Titular y voz de Brandlink","2 posts propios publicados si tienes (para calibrar voz)"],
-       prompt:`Necesito los primeros posts de LinkedIn para mi marca personal.
+       prompt:`Primeros posts de LinkedIn para mi marca personal.
 
-PUV: [de Kratos]. Audiencia: [de Aura].
-Voz de referencia: [titular y notas de Brandlink].
-Posts previos: [pega 2 posts para calibrar voz, o indica que no tienes].
+PUV: [de Kratos]. Audiencia: [de Aura]. Voz: [titular y notas de Brandlink].
+Posts previos: [pega 2 posts o indica "no tengo posts publicados"].
 
-Modo 4 si pegué posts, Modo 3 si no tengo. Serie de 5 posts con arco narrativo. Primero los ganchos para aprobación, luego cada post completo.`,
+Modo 4 si pegué posts, Modo 3 si no. Serie de 5 posts con arco narrativo. Primero los ganchos para aprobación, luego cada post completo.`,
        output_note:"Guarda los 5 posts aprobados — pasan a ReelPro para adaptar a video."},
 
       {gem:"ReelPro",title:"Guiones de video para presencia en Reels o TikTok",
        desc:"ReelPro adapta los temas de Copylink a formato video. Alternativa: UGC Video Prompt para generación con IA. Genera 2 versiones con hooks distintos para testing.",
        inputs:["PUV de Kratos","Buyer Persona de Aura","Plataforma: Instagram Reels o TikTok","Temas de los posts de Copylink a adaptar a video"],
-       prompt:`Necesito guiones de video para mi marca personal.
+       prompt:`Guiones de video para mi marca personal.
 
 PUV: [de Kratos]. Buyer Persona: [de Aura].
-Plataforma: [Reels / TikTok].
-Temas a adaptar: [temas de Copylink].
+Plataforma: [Reels / TikTok]. Temas a adaptar: [temas de Copylink].
 
 Una pregunta de diagnóstico. 2 versiones con hooks distintos (A y B). Texto exacto, instrucciones de producción, texto en pantalla y cues de edición.`,
        output_note:"Guarda los guiones — pasan a HumanText junto con los posts de Copylink."},
 
       {gem:"HumanText",title:"Eliminación de señales de IA en todo el contenido",
-       desc:"HumanText pasa todo el contenido producido por un control de calidad final antes de publicar. Elimina señales de IA y entrega el informe de cambios por pieza.",
+       desc:"HumanText pasa todo el contenido producido por QA final antes de publicar. Procesa pieza por pieza (no el documento completo) para mantener resultados consistentes bajo 800 palabras por sesión.",
        inputs:["Posts de LinkedIn de Copylink","Secciones del perfil de Brandlink","Guiones de ReelPro","Instrucción de extensión: mantener / reducir X% / ampliar X%"],
-       prompt:`Necesito humanizar todo el contenido de mi marca personal antes de publicar.
+       prompt:`Humanizar el contenido de mi marca personal antes de publicar.
 
-Instrucción de extensión: [mantener / reducir X% / ampliar X%].
+Instrucción: [mantener / reducir X% / ampliar X%].
 
+Procesa pieza por pieza — no todo en una sola sesión.
 Posts de LinkedIn: [pega los posts de Copylink].
 Secciones del perfil: [pega las secciones de Brandlink].
 Guiones de Reels: [pega los guiones de ReelPro].
 
-Elimina señales de IA. Entrega el informe de cambios por pieza y el contenido final listo para publicar.`,
-       output_note:"Contenido final sin señales de IA listo para publicar. Sistema 5 completo."}
+Elimina señales de IA. Informe de cambios por pieza y contenido final listo para publicar.`,
+       output_note:"Contenido humanizado listo para publicar. Sistema 5 completo. Si tu objetivo incluye monetizar, continúa con Sistema 3 o Sistema 1."}
     ]
   },
   {
@@ -1744,14 +1854,14 @@ Elimina señales de IA. Entrega el informe de cambios por pieza y el contenido f
     kpis:{q:"Piezas producidas por semana, engagement rate por plataforma, crecimiento de audiencia.",c:"Consistencia de voz — cualquier pieza suena al mismo creador."},
     steps:[
       {gem:"Schwartz",title:"Ángulos y brief creativo para la semana — Lunes",
-       desc:"Schwartz diagnostica el nivel de consciencia de la audiencia por canal y entrega 3-5 ángulos con el bloque HANDOFF para Copylink, ReelPro y SeoVid. Requiere PUV ya definida — ejecuta Sistema 5 hasta Fase 2 si no la tienes.",
+       desc:"Schwartz diagnostica el nivel de consciencia y entrega 3-5 ángulos con el bloque HANDOFF para Copylink, ReelPro y SeoVid. Requiere PUV ya definida — ejecuta Sistema 5 hasta Fase 2 si no la tienes.",
        inputs:["Tu PUV definida (Sistema 5 Fase 2 si no la tienes)","Descripción de la audiencia","Canales activos esta semana: LinkedIn, Reels, YouTube","Objetivo: autoridad, leads, conversión o nutrición"],
        prompt:`Dirección creativa para el contenido de esta semana.
 
 PUV: [mensaje central]. Audiencia: [descripción].
 Canales activos: [lista]. Objetivo: [autoridad/leads/conversión/nutrición].
 
-3-5 ángulos con gancho, ángulo emocional y tipo de contenido por canal. Genera el bloque HANDOFF para los Gems productores.`,
+3-5 ángulos con gancho, ángulo emocional y tipo de contenido por canal. Bloque HANDOFF para los Gems productores.`,
        output_note:"Copia el bloque HANDOFF — pégalo al abrir Copylink, ReelPro y SeoVid esta semana."},
 
       {gem:"Copylink",title:"2-3 posts de LinkedIn con ganchos aprobados — Mar/Mié",
@@ -1760,11 +1870,10 @@ Canales activos: [lista]. Objetivo: [autoridad/leads/conversión/nutrición].
        prompt:`[Pega aquí el bloque HANDOFF de Schwartz]
 
 2-3 posts de LinkedIn para esta semana.
-
 PUV: [mensaje central]. Ángulos: [de Schwartz].
-Posts previos para calibrar voz: [pega 2 o indica que no tienes].
+Posts previos: [pega 2 o indica que no tienes].
 
-Modo 1 con ángulos de Schwartz. Primero 3 opciones de gancho por post. Al confirmar, desarrolla: Gancho → Re-gancho → Cuerpo → Cierre → CTA.`,
+Modo 1 con ángulos de Schwartz. 3 opciones de gancho por post para aprobación. Al confirmar: Gancho → Re-gancho → Cuerpo → Cierre → CTA.`,
        output_note:"Posts aprobados — pasan a HumanText el jueves."},
 
       {gem:"ReelPro",title:"Versiones A y B de guiones para grabar — Mar/Mié",
@@ -1773,157 +1882,170 @@ Modo 1 con ángulos de Schwartz. Primero 3 opciones de gancho por post. Al confi
        prompt:`[Pega aquí el bloque HANDOFF de Schwartz]
 
 Guiones de Reels para esta semana.
-
 PUV: [mensaje central]. Plataforma: [plataforma].
 Estilo: [a cámara / voz en off / texto en pantalla].
 
 Una pregunta de diagnóstico. 2 versiones con hooks distintos (A y B). Texto exacto, instrucciones de producción, texto en pantalla y cues de edición.`,
-       output_note:"Guiones A y B — si el hook se siente débil pasan a ReelAudit; si no, directo a HumanText."},
+       output_note:"Guiones A y B — si el hook es débil pasan a ReelAudit; si no, directo a HumanText."},
 
       {gem:"SeoVid",title:"Descripción optimizada para YouTube — Mar/Mié",
-       desc:"SeoVid produce la descripción del video de YouTube con gancho en las primeras 2 líneas, keywords secundarias y hashtags. Solo si YouTube es un canal activo esta semana.",
+       desc:"SeoVid produce la descripción con gancho en las primeras 2 líneas, keywords secundarias y hashtags. Solo si YouTube es canal activo esta semana.",
        inputs:["Tema del video de YouTube","Palabra clave objetivo","Audiencia y tono del canal","CTA del video: suscribirse, link en descripción, comentar"],
        prompt:`Descripción optimizada para mi video de YouTube.
 
 Tema: [tema]. Keyword objetivo: [keyword].
 Audiencia: [descripción]. Tono: [tono]. CTA: [acción].
 
-Modo Directo. Gancho en las primeras 2 líneas (visible sin expandir), estructura con keywords secundarias, timestamps si aplica, CTA y hashtags.`,
+Modo Directo. Gancho en las primeras 2 líneas, estructura con keywords secundarias, timestamps si aplica, CTA y hashtags.`,
        output_note:"Descripción lista — pasa a HumanText junto con los demás textos."},
 
       {gem:"ReelAudit",title:"Diagnóstico Hook/Contenido/CTA antes de grabar — Jueves",
        desc:"ReelAudit diagnostica los guiones con nivel de severidad (Crítico/Mejorable/Sólido) y entrega versión reescrita. Usar solo si el hook se siente débil.",
-       inputs:["Guiones de ReelPro versión A y B","Plataforma de publicación","Audiencia objetivo","Objetivo del video: autoridad, leads o conversión"],
+       inputs:["Guiones de ReelPro versión A y B","Plataforma de publicación","Audiencia objetivo","Objetivo: autoridad, leads o conversión"],
        prompt:`Auditoría de guiones antes de grabar.
 
 Plataforma: [plataforma]. Audiencia: [descripción]. Objetivo: [objetivo].
 Versión A: [guión A]. Versión B: [guión B].
 
-Diagnóstico Hook/Contenido/CTA con severidad: Crítico/Mejorable/Sólido. Versión reescrita de la que tiene mayor potencial.`,
+Diagnóstico Hook/Contenido/CTA con severidad: Crítico/Mejorable/Sólido. Versión reescrita de la de mayor potencial.`,
        output_note:"Guión corregido — pasa a HumanText junto con los demás textos de la semana."},
 
-      {gem:"HumanText",title:"Eliminación de señales de IA en todo el contenido — Jueves",
-       desc:"HumanText pasa todo el contenido producido en martes-miércoles por control de calidad. Entrega el informe de cambios por pieza. Pasa todo en una sola sesión para consistencia de voz.",
+      {gem:"HumanText",title:"Humanización de todo el contenido — Jueves",
+       desc:"HumanText pasa todo el contenido por QA final. Procesa pieza por pieza — no todo el documento de una sola vez — para mantener consistencia bajo el límite de 800 palabras por sesión.",
        inputs:["Posts de LinkedIn de Copylink","Guiones de ReelPro o ReelAudit","Descripción de YouTube de SeoVid (si aplica)","Instrucción de extensión: mantener / reducir X% / ampliar X%"],
        prompt:`Humanizar el contenido de esta semana.
 
 Instrucción: [mantener / reducir X% / ampliar X%].
+Procesa pieza por pieza — no todo junto en una sola sesión.
+
 Posts de LinkedIn: [pega los posts].
 Guiones de Reels: [pega los guiones].
 Descripción de YouTube: [pega si aplica].
 
-Elimina señales de IA. Informe de cambios por pieza y contenido final listo para publicar el viernes.`,
-       output_note:"Contenido final listo. El viernes publicas y registras el engagement para alimentar los ángulos de la siguiente semana."}
+Elimina señales de IA. Informe de cambios por pieza y contenido final.`,
+       output_note:"Contenido humanizado listo para publicar el viernes. La siguiente semana retoma desde Schwartz."}
     ]
   },
   {
     id:7, name:"Auditoría y optimización de funnel existente",
-    problem:"Ya tienes un funnel de ventas activo (landing, ads, emails, WhatsApp) pero las conversiones son bajas y no sabes dónde está la fuga.",
-    result:"Diagnóstico preciso de cada punto de fuga, assets reescritos, oferta corregida si aplica, equipo de cierre entrenado.",
+    problem:"Ya tienes un funnel de ventas activo pero las conversiones son bajas y no sabes dónde está la fuga.",
+    result:"Diagnóstico preciso basado primero en datos reales de conversión, con assets reescritos, oferta corregida si aplica y equipo de cierre entrenado.",
     kpis:{q:"Mejora en tasa de conversión pre/post, reducción de CPA, incremento de CTR en ads.",c:"Reducción de las objeciones no resueltas en conversaciones de venta."},
     steps:[
-      {gem:"Schwartz",title:"Dónde está la fuga: nivel de consciencia vs. mensaje actual",
-       desc:"El error más frecuente no es el copy — es hablarle al nivel equivocado. Schwartz diagnostica el nivel real y contrasta con el mensaje actual. Genera el bloque HANDOFF para las siguientes fases.",
+      {gem:"TrackingDiagnostics",title:"Mapa de fuga por etapa basado en datos reales",
+       desc:"TrackingDiagnostics produce el diagnóstico cuantitativo antes del cualitativo. Sin datos, se puede terminar optimizando la pieza equivocada. 'No tengo ese dato' es respuesta válida — el Gem trabaja con lo que hay.",
+       inputs:["Métricas de impresiones y clics de anuncios (o 'no tengo')","CTR de la landing page (o 'no tengo')","Tasa de apertura y respuesta en emails/WhatsApp (o 'no tengo')","Tasa de cierre en conversaciones de venta (o 'no tengo')"],
+       prompt:`Necesito el mapa de fuga de mi funnel por etapa.
+
+Métricas disponibles (indica "no tengo" donde no dispongas):
+- Impresiones y clics de anuncios: [dato o "no tengo"]
+- CTR de la landing: [dato o "no tengo"]
+- Tasa de apertura de emails / tasa de respuesta en WhatsApp: [dato o "no tengo"]
+- Tasa de cierre en conversaciones: [dato o "no tengo"]
+
+Produce el mapa de embudo con pérdida porcentual por etapa. Compara contra benchmark. Identifica la etapa de mayor fuga relativa. Recomienda qué Gem de auditoría activar en la siguiente fase según la etapa señalada.`,
+       checkpoint:"¿TrackingDiagnostics señala la etapa de mayor fuga? Esa etapa define qué auditor activar en la Fase siguiente.",
+       output_note:"Guarda el mapa de fuga y la recomendación del Gem auditor — punto de partida de toda la optimización."},
+
+      {gem:"Schwartz",title:"Nivel de consciencia vs. mensaje actual del funnel",
+       desc:"El error más frecuente no es el copy — es hablarle al nivel equivocado. Schwartz diagnostica el nivel real y contrasta con el mensaje actual. Genera el bloque HANDOFF para los auditores.",
        inputs:["Descripción del producto o servicio del funnel","Descripción de la audiencia que llega al funnel","Canal de captación principal: ads, orgánico, referidos","Copy actual: titular de la landing o mensaje de apertura"],
        prompt:`Diagnóstico del nivel de consciencia de mi audiencia para optimizar el funnel.
 
 Producto/servicio: [descripción]. Audiencia: [descripción].
 Canal: [canal]. Copy actual: [titular o mensaje de apertura].
 
-Nivel real de la audiencia vs. nivel al que apunta el copy. Si hay desalineación, identifícala. Genera el bloque HANDOFF para los Gems de auditoría.`,
-       checkpoint:"¿El funnel empieza donde está la audiencia o donde está el producto? Si empieza en el producto con audiencia que no conoce la solución, la fuga está arriba.",
-       output_note:"Guarda el diagnóstico de nivel y el bloque HANDOFF — punto de partida de toda la optimización."},
+Nivel real de la audiencia vs. nivel al que apunta el copy. Si hay desalineación, identifícala. Bloque HANDOFF para los Gems de auditoría.`,
+       checkpoint:"¿El funnel empieza donde está la audiencia o donde está el producto? Si empieza en el producto con audiencia que no conoce la solución, la fuga está en la parte alta.",
+       output_note:"Guarda el diagnóstico de nivel y el bloque HANDOFF — punto de partida cualitativo de la optimización."},
 
-      {gem:"AdsAudit",title:"6 pilares del anuncio: puntuación y 3 cambios prioritarios",
-       desc:"AdsAudit infiere producto, objetivo y audiencia desde el creativo, declara esas inferencias antes del análisis y evalúa 6 pilares con puntuación ponderada de 100 pts.",
-       inputs:["Creativos de los anuncios (imagen o descripción detallada)","Copy de los anuncios","Canal: Facebook, Instagram o TikTok","CTR y tasa de conversión actuales si los tienes"],
+      {gem:"AdsAudit",title:"Auditoría de creativos publicitarios",
+       desc:"Activar si TrackingDiagnostics señaló que la fuga está en la etapa de anuncios. AdsAudit evalúa 6 pilares con puntuación de 100 pts y entrega 3 cambios priorizados. Nota: LandingAudit (auditor de landing pages) está en construcción como Gap tipo B — si la fuga señalada es la landing, usa CopyMaster o LandingPro en la Fase 5 en lugar de auditar.",
+       inputs:["Creativos de los anuncios (imagen o descripción detallada)","Copy de los anuncios","Canal: Facebook, Instagram o TikTok","CTR y tasa de conversión actuales de TrackingDiagnostics"],
        prompt:`Auditoría de mis anuncios actuales.
 
-Canal: [canal]. CTR actual: [CTR o 'no lo tengo'].
+Canal: [canal]. CTR actual: [de TrackingDiagnostics o 'no tengo'].
 Copy: [copy]. Creativo: [descripción detallada].
 
-Declara inferencias sobre producto, objetivo y audiencia antes del análisis. 6 pilares ponderados de 100 pts. Causa raíz en una frase. 3 cambios priorizados por impacto con propuesta A/B.`,
-       output_note:"Guarda diagnóstico con puntuación y 3 cambios — CopyMaster los usa para la reescritura."},
+Declara inferencias sobre producto, objetivo y audiencia antes del análisis. 6 pilares ponderados de 100 pts. Causa raíz en una frase. 3 cambios priorizados con propuesta A/B.`,
+       output_note:"Guarda diagnóstico con puntuación y 3 cambios — CopyMaster los integra en la reescritura."},
 
-      {gem:"ReelAudit",title:"Diagnóstico del video que no retiene ni convierte",
-       desc:"ReelAudit diagnostica Hook, Contenido y CTA con nivel de severidad y entrega versión reescrita con indicaciones de producción.",
-       inputs:["Guiones o transcripciones de videos actuales","Plataforma de publicación","Audiencia objetivo","Objetivo del video: autoridad, leads o conversión"],
-       prompt:`Auditoría de mis videos actuales.
+      {gem:"ReelAudit",title:"Auditoría de guiones de video del funnel",
+       desc:"Activar si TrackingDiagnostics señaló que la fuga está en el video. Diagnostica Hook, Contenido y CTA con nivel de severidad y entrega versión reescrita.",
+       inputs:["Guiones o transcripciones de los videos actuales","Plataforma de publicación","Audiencia objetivo","Objetivo del video: autoridad, leads o conversión"],
+       prompt:`Auditoría de mis videos actuales del funnel.
 
 Plataforma: [plataforma]. Audiencia: [descripción]. Objetivo: [objetivo].
 Guión o transcripción: [pega el guión o transcripción].
 
 Hook/Contenido/CTA con severidad: Crítico/Mejorable/Sólido. Versión reescrita con correcciones e indicaciones de producción.`,
-       output_note:"Guarda diagnóstico y versión reescrita — insumo para CopyMaster si el problema es el mensaje."},
+       output_note:"Guarda diagnóstico y versión reescrita — insumo para CopyMaster si el problema es el mensaje central."},
 
-      {gem:"Kratos",title:"¿La PUV es el problema? Diagnóstico y recalibración",
+      {gem:"Kratos",title:"¿La PUV es el problema? Recalibración condicional",
        desc:"Activar solo si Schwartz o los auditores señalan que el diferenciador es el problema de fondo. Si el copy era débil pero la PUV era correcta, omite este paso.",
        inputs:["Diagnóstico de Schwartz","Diagnóstico de AdsAudit o ReelAudit","Descripción del producto o servicio","PUV actual del funnel"],
-       prompt:`Necesito recalibrar mi PUV basado en los diagnósticos del funnel.
+       prompt:`Recalibración de la PUV basada en los diagnósticos del funnel.
 
 Schwartz: [nivel y desalineación]. Auditoría: [hallazgos].
 PUV actual: [PUV]. Producto/servicio: [descripción].
 
-¿El diferenciador era el problema o el copy era débil con PUV correcta? Solo recalibra si el mensaje central no diferencia. PUV recalibrada lista para reescribir assets.`,
-       output_note:"Si Kratos recalibró la PUV, guarda la nueva versión para CopyMaster. Si la PUV era correcta, pasa directo a CopyMaster."},
+¿El diferenciador era el problema de fondo o el copy era débil con PUV correcta? Solo recalibra si el mensaje central no diferencia. PUV recalibrada lista para reescribir assets.`,
+       output_note:"Si Kratos recalibró la PUV, guarda la nueva versión para CopyMaster. Si la PUV era correcta, pasa directamente a CopyMaster."},
 
-      {gem:"Alex",title:"¿La oferta es el problema? Reconstrucción con Ecuación de Valor",
-       desc:"Activar solo si el diagnóstico señala que la oferta (precio, garantía, bonos) — no solo el mensaje — es el problema de fondo. Sin esta fase, ningún Gem puede reconstruir la oferta.",
+      {gem:"Alex",title:"¿La oferta es el problema? Reconstrucción condicional",
+       desc:"Activar solo si el diagnóstico señala que la oferta (precio, garantía, bonos) — no solo el mensaje — es el problema de fondo.",
        inputs:["Diagnóstico de Schwartz y auditores","Oferta actual con precio y entregables","Feedback de prospectos sobre precio o valor","Competidores y sus ofertas"],
        prompt:`El diagnóstico señala que la oferta es el problema de fondo.
 
 Oferta actual: [descripción con precio]. Diagnóstico: [hallazgos].
-Feedback de prospectos: [objeciones sobre precio/valor].
-Competidores: [ofertas similares y precios].
+Feedback de prospectos: [objeciones sobre precio/valor]. Competidores: [ofertas similares].
 
 Reconstruye con la Ecuación de Valor corregida: resultado soñado, probabilidad percibida, tiempo y esfuerzo, precio justificado.`,
        output_note:"Oferta reconstruida — CopyMaster la integra en la reescritura del copy."},
 
-      {gem:"CopyMaster",title:"Reescritura calibrada al nivel de consciencia real",
-       desc:"CopyMaster reescribe las piezas con el framework apropiado para el nivel de consciencia diagnosticado. Entrega el texto final completo — no borradores.",
-       inputs:["PUV de Kratos (o la original si no se recalibró)","Oferta de Alex (si se activó)","Diagnósticos de AdsAudit y/o ReelAudit","Nivel de consciencia de Schwartz y piezas a reescribir"],
-       prompt:`Reescritura del copy de mi funnel basada en los diagnósticos.
+      {gem:"CopyMaster",title:"Reescritura del copy calibrada al nivel real de la audiencia",
+       desc:"CopyMaster reescribe las piezas con el framework apropiado al nivel de consciencia diagnosticado. Alternativa: si la fuga específica es la landing page, usa LandingPro en su lugar — LandingPro reconstruye la landing completa clasificando el framework de copywriting adecuado al tipo de oferta, con más especificidad que CopyMaster para este artefacto.",
+       inputs:["PUV de Kratos (o la original si no se recalibró)","Oferta de Alex (si se activó)","Diagnósticos de AdsAudit y/o ReelAudit","Nivel de consciencia de Schwartz y piezas específicas a reescribir"],
+       prompt:`Reescritura del copy del funnel basada en los diagnósticos.
 
 PUV: [de Kratos o la original]. Oferta: [de Alex si se activó].
 Nivel de consciencia: [de Schwartz]. Problema central: [hallazgo principal].
 Piezas a reescribir: [lista específica].
 
 Framework apropiado al nivel de consciencia. Texto final completo — no borradores.`,
-       output_note:"Assets reescritos — pasan a SalesSim para entrenar el cierre con las objeciones expuestas."},
+       output_note:"Assets reescritos — pasan a SalesSim para entrenar el cierre con las objeciones reales."},
 
-      {gem:"SalesSim",title:"Entrenamiento con las objeciones reales que expuso la auditoría",
-       desc:"SalesSim entrena con las objeciones específicas detectadas en la auditoría — distintas a las objeciones genéricas. VentasFlow solo reescribe mensajes; SalesSim entrena al humano.",
+      {gem:"SalesSim",title:"Entrenamiento con las objeciones reales de la auditoría",
+       desc:"SalesSim entrena con las objeciones específicas detectadas en la auditoría — distintas a las objeciones genéricas. VentasFlow reescribe mensajes; SalesSim entrena al humano que ejecuta el cierre.",
        inputs:["Objeciones identificadas en la auditoría (de Schwartz y auditores)","Descripción del servicio o producto con precio","Canal de cierre: WhatsApp, DM o llamada","Perfil a simular: Curioso, Escéptico, Fantasma o Tiburón"],
        prompt:`Entrenamiento de cierre con las objeciones que expuso la auditoría.
 
-Servicio/producto y precio: [descripción].
-Objeciones detectadas en auditoría: [lista específica].
-Canal: [WhatsApp / DM / llamada].
+Servicio/producto y precio: [descripción]. Canal: [WhatsApp / DM / llamada].
+Objeciones detectadas en auditoría: [lista específica de la auditoría].
 Perfil: [Curioso / Escéptico / Fantasma / Tiburón].
 
 Simula con esas objeciones específicas. Puntuación, análisis de sentimiento y reescritura del peor mensaje.`,
        output_note:"Guarda la puntuación y reescritura — VentasFlow integra estos insights en la secuencia reconstruida."},
 
       {gem:"HumanText",title:"Control de calidad antes de reimplementar",
-       desc:"HumanText pasa los assets reescritos por CopyMaster por control de calidad final antes de volver a publicar. Elimina señales de IA y entrega el informe de cambios.",
-       inputs:["Assets reescritos por CopyMaster","Tu estilo de escritura natural (un texto propio como referencia)","Tono de la marca","Piezas que deben sonar más como tú"],
-       prompt:`Control de calidad de los assets reescritos antes de reimplementar.
+       desc:"HumanText pasa los assets reescritos por CopyMaster por QA final antes de volver a publicar. Procesa pieza por pieza para mantener resultados consistentes.",
+       inputs:["Assets reescritos por CopyMaster","Un texto propio como referencia de voz natural","Tono de la marca","Piezas que deben sonar más como tú"],
+       prompt:`Control de calidad de los assets antes de reimplementar.
 
 Mi voz natural: [texto propio como referencia].
 Tono de marca: [descripción].
-Assets a humanizar: [pega los assets de CopyMaster].
+Assets a humanizar: [pega los assets de CopyMaster, pieza por pieza].
 
 Elimina señales de IA. Informe de cambios por pieza y versión final lista para reimplementar.`,
        output_note:"Assets humanizados listos para reimplementar. Pasan a VentasFlow para la secuencia final."},
 
-      {gem:"VentasFlow",title:"Reconstrucción de la secuencia si tiene fallos estructurales",
+      {gem:"VentasFlow",title:"Secuencia de cierre reconstruida o validada",
        desc:"VentasFlow evalúa si la secuencia tiene problemas estructurales y la reconstruye si es necesario. Si solo necesita ajustes de copy, usa CopyMaster en su lugar.",
        inputs:["Secuencia actual de WhatsApp","Objeciones identificadas en la auditoría","Perfil de voz: 1 Directo, 2 Consultivo, 3 Autoridad, 4 Minimalista","Links actualizados, horarios y moneda local"],
        prompt:`Revisión de la secuencia de cierre post-optimización.
 
-Secuencia actual: [pega la secuencia].
-Objeciones de la auditoría: [lista]. Perfil de voz: [1/2/3/4].
-Links: [links]. Horarios: [horarios]. Moneda: [moneda].
+Secuencia actual: [pega la secuencia]. Objeciones de la auditoría: [lista].
+Perfil de voz: [1/2/3/4]. Links: [links]. Horarios: [horarios]. Moneda: [moneda].
 
 ¿Problemas estructurales: mensajes genéricos, falta de lógica Si/Entonces, voz inconsistente? Si sí, reconstruye desde cero. Si no, indícalo — usa CopyMaster para ajustes menores.`,
        output_note:"Secuencia reconstruida o validada. Sistema 7 completo."}
@@ -1931,9 +2053,9 @@ Links: [links]. Horarios: [horarios]. Moneda: [moneda].
   },
   {
     id:8, name:"Reinvención profesional",
-    problem:"Estás en transición de carrera, quieres cambiar de industria o monetizar diferente tu experiencia, pero no tienes claridad sobre el camino ni cómo reposicionarte.",
-    result:"Ruta de reinvención con nueva dirección definida, posicionamiento claro, presencia digital reencuadrada y primeros pasos de ejecución.",
-    kpis:{q:"Habilidades adquiridas vs. plan de MentorPro, mensajes de la nueva audiencia, primeras oportunidades en el nuevo campo.",c:"Puedes explicar tu transición en 30 segundos como una ventaja, no como un riesgo."},
+    problem:"Estás en transición de carrera, quieres cambiar de industria o monetizar diferente tu experiencia, pero no tienes claridad sobre el camino ni sobre cómo reposicionarte.",
+    result:"Ruta de reinvención con nuevo posicionamiento, brecha de habilidades identificada, presencia digital reencuadrada y primeros pasos de posicionamiento en el nuevo campo — no ejecución comercial todavía.",
+    kpis:{q:"Habilidades adquiridas vs. plan de MentorPro, mensajes de la nueva audiencia, primeras oportunidades en el nuevo campo.",c:"Puedes explicar tu transición en 30 segundos como una ventaja. Si tu objetivo incluye monetizar, continúa con Sistema 3 (servicios) o Sistema 1 (producto digital)."},
     steps:[
       {gem:"Kenji",title:"Descubrimiento de la nueva dirección antes de planificar",
        desc:"Kenji resuelve el 'hacia dónde' antes del 'cómo'. MentorPro asume una meta ya definida — Kenji la descubre cuando el usuario no la tiene clara. Usa el Ikigai aplicado como metodología.",
@@ -1941,22 +2063,21 @@ Links: [links]. Horarios: [horarios]. Moneda: [moneda].
        prompt:`Necesito claridad sobre mi nueva dirección profesional antes de planificar.
 
 Situación actual: [descripción]. Qué me genera energía: [actividades].
-Qué me agota: [actividades]. Habilidades que domino: [lista].
-Vida deseada: [descripción].
+Qué me agota: [actividades]. Habilidades que domino: [lista]. Vida deseada: [descripción].
 
-Ikigai aplicado con diálogo socrático. Entrega: nueva dirección validada + las 2-3 opciones más prometedoras si hay varias.`,
+Ikigai aplicado con diálogo socrático. Nueva dirección validada + las 2-3 opciones más prometedoras si hay varias.`,
        checkpoint:"¿Puedes articular la nueva dirección en una oración? Si no, profundiza antes de pasar a MentorPro.",
-       output_note:"Guarda la nueva dirección definida — es el 'meta de reinvención' que MentorPro necesita para poder planificar."},
+       output_note:"Guarda la nueva dirección definida — es el 'meta de reinvención' que MentorPro necesita para planificar."},
 
       {gem:"MentorPro",title:"Brechas actuales y plan de acción para esta semana",
-       desc:"MentorPro opera en 3 fases secuenciales, una pregunta por turno. Identifica brechas, detecta palancas y genera el plan con tareas atómicas priorizadas para ejecución inmediata.",
-       inputs:["Rol actual y años de experiencia","Industria actual","Meta de reinvención (de Kenji o ya definida)","Restricciones: tiempo disponible, compromisos financieros, contexto personal"],
+       desc:"MentorPro opera en 3 fases secuenciales, una pregunta por turno. Identifica brechas, detecta palancas y genera el plan con tareas atómicas ejecutables esta semana.",
+       inputs:["Rol actual y años de experiencia","Industria actual","Meta de reinvención (de Kenji)","Restricciones: tiempo disponible, compromisos financieros, contexto personal"],
        prompt:`Plan estratégico de desarrollo para mi reinvención.
 
 Rol actual: [rol]. Experiencia: [años] en [industria].
 Meta de reinvención: [de Kenji]. Restricciones: [tiempo, dinero, contexto].
 
-3 fases secuenciales — una pregunta por turno. Brechas identificadas, palancas detectadas, viabilidad del plazo evaluada. Plan con tareas atómicas para esta semana, recursos por habilidad y próximo paso inmediato.`,
+3 fases secuenciales — una pregunta por turno. Brechas, palancas, viabilidad del plazo. Plan con tareas atómicas para esta semana, recursos por habilidad y próximo paso inmediato.`,
        checkpoint:"¿El plan nombra tareas ejecutables esta semana? Si solo hay objetivos a largo plazo, pide tareas atómicas.",
        output_note:"Guarda el Plan Estratégico con brechas, palancas y próximas acciones — input de Aura."},
 
@@ -1968,11 +2089,11 @@ Meta de reinvención: [de Kenji]. Restricciones: [tiempo, dinero, contexto].
 Nueva dirección: [de Kenji]. Cliente/empleador objetivo: [descripción].
 Habilidades transferibles: [de MentorPro]. Experiencia como activo: [descripción].
 
-Buyer Persona del nuevo campo. Qué dolores resuelvo desde mi experiencia anterior reencuadrada como ventaja. Objeciones específicas a la transición: falta de trayectoria visible, credibilidad en el nuevo campo.`,
+Buyer Persona del nuevo campo. Qué dolores resuelvo desde mi experiencia anterior reencuadrada como ventaja. Objeciones a la transición: falta de trayectoria visible, credibilidad en el nuevo campo.`,
        output_note:"Guarda el Buyer Persona con objeciones a la transición — input de Kratos."},
 
       {gem:"Kratos",title:"Tu pasado como ventaja, no como obstáculo",
-       desc:"Kratos construye el mensaje que reencuadra la carrera anterior como ventaja competitiva en el nuevo campo. Restricción clave: no borrar el pasado — convertirlo en diferenciador.",
+       desc:"Kratos construye el mensaje que reencuadra la carrera anterior como ventaja en el nuevo campo. Restricción clave: no borrar el pasado — convertirlo en diferenciador. Aplica los tres filtros internos.",
        inputs:["Nueva dirección y Buyer Persona de Aura","Experiencia anterior reencuadrada como ventaja","Plan de MentorPro (fortalezas y palancas)","Objeciones a la transición de Aura"],
        prompt:`Nuevo mensaje diferenciador para mi reinvención.
 
@@ -1987,7 +2108,7 @@ Restricción: no borrar el pasado — reencuadrarlo como ventaja. Tres filtros i
       {gem:"Brandlink",title:"LinkedIn reorientado al nuevo posicionamiento",
        desc:"Brandlink reconstruye el perfil desde el nuevo posicionamiento usando la experiencia anterior como material de diferenciación. El proceso parte desde cero en posicionamiento pero no borra la trayectoria.",
        inputs:["PUV de transición de Kratos","Buyer Persona del nuevo mercado de Aura","Experiencia anterior a reencuadrar como diferenciador","3 logros transferibles al nuevo campo"],
-       prompt:`Reconstrucción de mi perfil de LinkedIn para la reinvención.
+       prompt:`Reconstrucción del perfil de LinkedIn para mi reinvención.
 
 Nueva PUV: [de Kratos]. Audiencia nueva: [de Aura].
 Experiencia a reencuadrar: [descripción]. Logros transferibles: [logro 1], [logro 2], [logro 3].
@@ -2000,12 +2121,11 @@ Framework UVP Architect™. Parte desde cero en posicionamiento pero usa el pasa
        inputs:["PUV de transición de Kratos","Buyer Persona del nuevo mercado de Aura","Titular y voz de Brandlink","Posts anteriores propios (si tienes, para calibrar voz)"],
        prompt:`5 posts de LinkedIn para posicionarme en mi nueva dirección.
 
-Nueva PUV: [de Kratos]. Nueva audiencia: [de Aura].
-Voz de referencia: [de Brandlink].
+Nueva PUV: [de Kratos]. Nueva audiencia: [de Aura]. Voz: [de Brandlink].
 Posts anteriores: [pega si tienes / indica que no tienes].
 
-Modo 3 sin posts previos, Modo 4 con posts. 5 posts que reencuadran la trayectoria previa como perspectiva única en el nuevo campo. Primero los ganchos para aprobación.`,
-       output_note:"5 posts listos para publicar. Sistema 8 completo."}
+Modo 3 sin posts previos, Modo 4 con posts. 5 posts que reencuadran la trayectoria como perspectiva única en el nuevo campo. Primero los ganchos para aprobación.`,
+       output_note:"5 posts listos. Sistema 8 completo. Si tu objetivo incluye monetizar la reinvención, continúa con Sistema 3 o Sistema 1."}
     ]
   }
 ];
@@ -2479,187 +2599,201 @@ const ORC_SYSTEMS = {
   1: {
     name: "Lanzamiento de producto digital",
     triggers: ["mi ebook","un ebook","el ebook","mi curso","un curso","el curso","lanzar curso","crear curso","ebook","curso","infoproducto","lanzar mi curso","lanzar mi ebook","lanzar producto","crear producto","producto propio","guía descargable","plantilla","contenido educativo","formación","capacitación","producto digital","productos digitales","vender producto digital","vender productos digitales","vender digital","mis productos digitales","mis ebooks","mis cursos","infoproductos","material educativo","vender mi ebook","vender mi curso","lanzar un ebook","lanzar un curso","crear un ebook","crear un curso","quiero vender digital","monetizar conocimiento","vender conocimiento","vender formación","vender mi conocimiento"],
-    diag: "El usuario quiere convertir su conocimiento en un producto digital y necesita la estructura completa: desde la audiencia hasta el sistema de cierre.",
-    gems: [
-      {name:"Aura", role:"Buyer Persona y objeciones del producto"},
-      {name:"ProductMaster", role:"Estructura y contenido del producto"},
-      {name:"EbookPro", role:"Redacción del ebook (ruta Ebook)"},
-      {name:"Alex", role:"Oferta Grand Slam"},
-      {name:"LandingPro", role:"Copy de la landing page"},
-      {name:"VSLMaster", role:"Guión del video de ventas"},
-      {name:"VentasFlow", role:"Secuencia de cierre WhatsApp"}
+    diag: "El usuario quiere convertir su conocimiento en un producto digital diferenciado y necesita la estructura completa: audiencia, diferenciación, producto, oferta, landing, VSL, tráfico y cierre.",
+    gems:[
+      {name:"Aura",role:"Buyer Persona y objeciones"},
+      {name:"Kratos",role:"Diferenciación del producto"},
+      {name:"ProductMaster",role:"Estructura y contenido"},
+      {name:"EbookPro",role:"Redacción del ebook"},
+      {name:"Alex",role:"Oferta Grand Slam"},
+      {name:"LandingPro",role:"Landing page"},
+      {name:"VSLMaster",role:"Guión del video de ventas"},
+      {name:"AdsStrategy",role:"Tráfico pago (condicional)"},
+      {name:"VentasFlow",role:"Secuencia de cierre"}
     ],
-    pipeline: [
-      {gem:"Aura", desc:"Buyer Persona con nivel de consciencia, mapa de dolores y tabla de objeciones con raíz psicológica."},
-      {gem:"ProductMaster", desc:"Ruta Curso: scripts, módulos y ejercicios. Ruta Ebook: índice validado + Promesa de Transformación."},
-      {gem:"EbookPro", desc:"Contenido completo del ebook sección por sección. Solo ruta Ebook."},
-      {gem:"Alex", desc:"Oferta Grand Slam: resultado prometido, entregables, bonos, garantía, precio y nombre."},
-      {gem:"LandingPro", desc:"Copy completo de landing page en Markdown con Hero, cuerpo persuasivo y cierre."},
-      {gem:"VSLMaster", desc:"Guión VSL con separación VISUAL/AUDIO por sección y duración estimada."},
-      {gem:"VentasFlow", desc:"Flujo de 12 momentos (M1-M12) con lógica condicional Si/Entonces."}
+    pipeline:[
+      {gem:"Aura",desc:"Buyer Persona con nivel de consciencia, mapa de dolores y tabla de objeciones."},
+      {gem:"Kratos",desc:"PUV antes de estructurar el producto — pitch, titular y narrativa."},
+      {gem:"ProductMaster",desc:"Estructura hasta Fase 4 únicamente. VSL y anuncios los cubren Gems especializados."},
+      {gem:"EbookPro",desc:"Redacción sección por sección. Solo ruta Ebook."},
+      {gem:"Alex",desc:"Oferta Grand Slam: resultado prometido, entregables, bonos, garantía, precio, nombre."},
+      {gem:"LandingPro",desc:"Copy completo de landing page en Markdown con Hero, cuerpo y cierre."},
+      {gem:"VSLMaster",desc:"Guión VSL con separación VISUAL/AUDIO y duración por bloque."},
+      {gem:"AdsStrategy",desc:"Solo si incluye pauta paga: segmentación, ángulos y presupuesto. Luego AdsMaster para creativos."},
+      {gem:"VentasFlow",desc:"Flujo de 12 momentos (M1-M12) con lógica Si/Entonces."}
     ]
   },
   2: {
     name: "Venta de producto digital como afiliado",
     triggers: ["afiliado","comisión","hotmart","clickbank","affiliate","afiliación","como afiliado","siendo afiliado","en calidad de afiliado","cursos de hotmart","productos de hotmart","cursos en hotmart","curso en hotmart","de hotmart","en hotmart","promover un curso","promover un producto digital","promover un ebook","vender como afiliado","vender afiliado","curso como afiliado","promover como afiliado","ganar con afiliado","curso de otra persona","producto de otra persona","cursos de otras personas","productos de otras personas","creado por otro","creado por otra persona","encontré en hotmart","encontré un curso","cursos creados por otros","vender de otro","sin producto propio","de terceros","terceros","promover","recomendar productos","ganar comisión","link de afiliado","enlace de afiliado","programa de afiliados","programa de afiliación","cursos de terceros","productos de terceros"],
-    diag: "El usuario quiere vender productos de terceros con ángulo diferenciador propio y necesita el funnel completo: PUV, kit de copy, video para tráfico y secuencia de cierre.",
-    gems: [
-      {name:"Aura", role:"Perfil del comprador"},
-      {name:"Schwartz", role:"Nivel de consciencia y HANDOFF"},
-      {name:"Kratos", role:"Ángulo diferenciador como afiliado"},
-      {name:"CopyMaster", role:"Página puente, emails y pieza de autoridad"},
-      {name:"ReelPro", role:"Guión de video para tráfico"},
-      {name:"VentasFlow", role:"Secuencia de cierre"}
+    diag: "El usuario quiere vender productos de terceros. Primero valida el nicho, luego construye el ángulo diferenciador y el funnel completo.",
+    gems:[
+      {name:"Lexis",role:"Validación conceptual del nicho"},
+      {name:"Aura",role:"Buyer Persona del comprador"},
+      {name:"Schwartz",role:"Nivel de consciencia y HANDOFF"},
+      {name:"Kratos",role:"Ángulo diferenciador"},
+      {name:"AdsStrategy",role:"Tráfico pago (condicional)"},
+      {name:"CopyMaster",role:"Página puente, emails y autoridad"},
+      {name:"ReelPro",role:"Guión de video para tráfico"},
+      {name:"VentasFlow",role:"Secuencia de cierre"}
     ],
-    pipeline: [
-      {gem:"Aura", desc:"Buyer Persona con nivel de consciencia, objeciones hacia afiliados y triggers de compra."},
-      {gem:"Schwartz", desc:"Nivel diagnosticado + estrategia de mensajería + bloque HANDOFF para Kratos."},
-      {gem:"Kratos", desc:"PUV diferenciadora (3 variaciones) + bono exclusivo que solo tú ofreces."},
-      {gem:"CopyMaster", desc:"Página puente, secuencia de 3-5 emails de nurturing y pieza de autoridad."},
-      {gem:"ReelPro", desc:"2 versiones de guión de video con hooks distintos para atraer tráfico al funnel."},
-      {gem:"VentasFlow", desc:"Flujo de 12 momentos (M1-M12) con lógica condicional Si/Entonces."}
+    pipeline:[
+      {gem:"Lexis",desc:"Mapeo competitivo del nicho. Checkpoint de viabilidad antes de construir."},
+      {gem:"Aura",desc:"Buyer Persona con nivel de consciencia y objeciones hacia afiliados."},
+      {gem:"Schwartz",desc:"Nivel diagnosticado + estrategia de mensajería + bloque HANDOFF para Kratos."},
+      {gem:"Kratos",desc:"PUV diferenciadora (3 variaciones) + bono exclusivo."},
+      {gem:"AdsStrategy",desc:"Solo si incluye pauta paga: segmentación y ángulos. Luego AdsMaster para creativos."},
+      {gem:"CopyMaster",desc:"Página puente, 3-5 emails de nurturing, pieza de autoridad."},
+      {gem:"ReelPro",desc:"2 versiones con hooks distintos para atraer tráfico."},
+      {gem:"VentasFlow",desc:"Flujo de 12 momentos (M1-M12)."}
     ]
   },
   3: {
     name: "Venta de servicios profesionales",
     triggers: ["servicios","servicio","consultor","coach","asesor","freelancer","clientes","alto ticket","cobrar","honorarios","consultoría","mentoring","mentoría","mentoria","acompañamiento","sesión","sesiones","posicionarme","captación","agencia","profesional independiente","1 a 1","1:1","uno a uno","coaching","asesoría","asesoria","programa","vender mi servicio","lanzar mi servicio","ofrecer mi servicio","mis servicios"],
-    diag: "El usuario ofrece servicios profesionales y necesita posicionamiento claro, oferta estructurada, sistema de captación y entrenamiento de cierre.",
-    gems: [
-      {name:"Aura", role:"Cliente ideal y objeciones al servicio"},
-      {name:"Kratos", role:"Propuesta de valor diferenciada"},
-      {name:"Alex", role:"Oferta de alto ticket"},
-      {name:"Brandlink", role:"LinkedIn como herramienta de captación"},
-      {name:"Copylink", role:"5 posts de autoridad"},
-      {name:"LandingPro", role:"Página de agendamiento"},
-      {name:"SalesSim", role:"Entrenamiento de cierre"},
-      {name:"VentasFlow", role:"3 flujos de seguimiento post-llamada"}
+    diag: "El usuario ofrece servicios y necesita posicionamiento claro, oferta estructurada, captación orgánica + paga y sistema de cierre.",
+    gems:[
+      {name:"Aura",role:"Cliente ideal y objeciones"},
+      {name:"Kratos",role:"Propuesta de valor"},
+      {name:"Alex",role:"Oferta de alto ticket"},
+      {name:"Brandlink",role:"LinkedIn para captación"},
+      {name:"Copylink",role:"5 posts de autoridad"},
+      {name:"LandingPro",role:"Página de agendamiento"},
+      {name:"AdsStrategy",role:"Captación paga (condicional)"},
+      {name:"SalesSim",role:"Entrenamiento de cierre"},
+      {name:"VentasFlow",role:"3 flujos de seguimiento"}
     ],
-    pipeline: [
-      {gem:"Aura", desc:"Buyer Persona B2B/B2C con nivel de consciencia y tabla de objeciones al servicio."},
-      {gem:"Kratos", desc:"PUV en 3 formatos: resultado específico, para quién y en qué plazo."},
-      {gem:"Alex", desc:"Oferta Grand Slam con entregables, bonos, garantía y precio anclado."},
-      {gem:"Brandlink", desc:"2 versiones de titular, secciones del perfil reescritas y plan de implementación."},
-      {gem:"Copylink", desc:"5 posts con arco narrativo progresivo para el primer mes de autoridad."},
-      {gem:"LandingPro", desc:"Página de agendamiento o aplicación para la llamada de descubrimiento."},
-      {gem:"SalesSim", desc:"Entrenamiento con prospectos Curioso/Escéptico/Fantasma/Tiburón."},
-      {gem:"VentasFlow", desc:"3 secuencias Si/Entonces: interesado, indeciso y no contestó."}
+    pipeline:[
+      {gem:"Aura",desc:"Buyer Persona B2B/B2C con nivel de consciencia y objeciones al servicio."},
+      {gem:"Kratos",desc:"PUV: resultado específico, para quién y en qué plazo."},
+      {gem:"Alex",desc:"Oferta Grand Slam con entregables, bonos, garantía y precio anclado."},
+      {gem:"Brandlink",desc:"2 versiones de titular, secciones reescritas, plan de implementación."},
+      {gem:"Copylink",desc:"5 posts con arco narrativo para el primer mes de autoridad."},
+      {gem:"LandingPro",desc:"Página de agendamiento/aplicación para la llamada de descubrimiento."},
+      {gem:"AdsStrategy",desc:"Solo si incluye pauta paga: segmentación de leads. Luego AdsMaster."},
+      {gem:"SalesSim",desc:"Entrenamiento con Curioso/Escéptico/Fantasma/Tiburón."},
+      {gem:"VentasFlow",desc:"3 secuencias Si/Entonces: interesado, indeciso, no contestó."}
     ]
   },
   4: {
     name: "Venta de productos físicos",
-    triggers: ["inmueble","inmuebles","casa","casas","apartamento","departamento","departamentos","propiedad","propiedades","vivienda","viviendas","bienes raíces","bienes raices","finca raíz","finca raiz","terreno","lote","oficina comercial","local comercial","arrendamiento","arriendo","alquiler de","suplemento","suplementos","vitamínico","vitaminas","vitamina","alimentos","comida","bebidas","bebida","calzado","zapatos","moda","ropa","cosméticos","cosmético","belleza","mascotas","artesanía","joyería","bisutería","accesorios","producto físico","productos físicos","tienda","inventario","ecommerce","e-commerce","catálogo","whatsapp business","envío","stock","físico","local","artículos","mercancía","producto natural","productos naturales","skincare","cuidado personal","crema","crema para la piel","crema facial","crema corporal","loción","serum","sérum","aceite esencial","aceite corporal","perfume","colonia","champú","shampoo","acondicionador","gel de ducha","jabón","jabones","exfoliante","mascarilla","tónico","contorno de ojos","protector solar","maquillaje","labial","pintalabios","rímel","base de maquillaje","producto de belleza","productos de belleza","cuidado de la piel","cuidado capilar","rutina de belleza","rutina skincare","aceite de argan","aceite de coco","colágeno","ácido hialurónico","retinol","niacinamida","producto artesanal","productos artesanales","comida saludable","alimento saludable","snack","café","té","infusión","vino","cerveza artesanal","miel","mermelada","aceite de oliva","panadería","repostería","dulces","chocolates","ropa deportiva","ropa de mujer","ropa de hombre","ropa de bebé","uniformes","calzado deportivo","tenis","sneakers","sandalias","botas","bolsos","carteras","mochilas","bisutería fina","anillos","pulseras","collares","aretes","pendientes","decoración","velas","difusor","plantas","macetas","libros físicos","agenda","cuaderno","papelería","juguetes","juguetes educativos","mascotas","alimento para mascotas","accesorios para mascotas","promover suplemento","promover cosméticos","promover cosmético","promover calzado","promover ropa","promover alimentos","promover productos","producto de moda","vender suplemento","vender cosméticos","vender calzado","vender crema","vender loción"],
-    diag: "El usuario vende un producto físico que compite por precio y necesita diferenciación, identidad de marca, copy para todos los puntos de contacto y flujo de ventas.",
-    gems: [
-      {name:"Aura", role:"Segmentos y nichos invisibles"},
-      {name:"Kratos", role:"Diferenciación del producto"},
-      {name:"Brandon", role:"Sistema visual de la marca"},
-      {name:"Schwartz", role:"Mensaje por canal"},
-      {name:"CopyMaster", role:"Copy para tienda, ads y recompra"},
-      {name:"ReelPro", role:"Guiones A y B para el producto"},
-      {name:"VentasFlow", role:"Flujo de venta por WhatsApp"}
+    triggers: ["inmueble","inmuebles","casa","casas","apartamento","departamento","departamentos","propiedad","propiedades","vivienda","viviendas","bienes raíces","bienes raices","finca raíz","finca raiz","terreno","lote","oficina comercial","local comercial","arrendamiento","arriendo","alquiler de","suplemento","suplementos","vitamínico","vitaminas","vitamina","alimentos","comida","bebidas","bebida","calzado","zapatos","moda","ropa","cosméticos","cosmético","belleza","mascotas","artesanía","joyería","bisutería","accesorios","producto físico","productos físicos","tienda","inventario","ecommerce","e-commerce","catálogo","whatsapp business","envío","stock","físico","local","artículos","mercancía","producto natural","productos naturales","skincare","cuidado personal","crema","crema para la piel","crema facial","crema corporal","loción","serum","sérum","aceite esencial","aceite corporal","perfume","colonia","champú","shampoo","acondicionador","gel de ducha","jabón","jabones","exfoliante","mascarilla","tónico","protector solar","maquillaje","labial","rímel","base de maquillaje","producto de belleza","productos de belleza","cuidado de la piel","cuidado capilar","rutina de belleza","aceite de argan","aceite de coco","colágeno","ácido hialurónico","retinol","producto artesanal","comida saludable","snack","café","té","infusión","vino","cerveza artesanal","miel","mermelada","aceite de oliva","ropa deportiva","ropa de mujer","ropa de hombre","ropa de bebé","bolsos","carteras","mochilas","bisutería fina","anillos","pulseras","collares","aretes","velas","difusor","plantas","macetas","juguetes","papelería","alimento para mascotas","accesorios para mascotas","promover suplemento","promover cosméticos","promover cosmético","promover calzado","promover ropa","promover alimentos","promover productos","producto de moda","vender suplemento","vender cosméticos","vender calzado","vender crema","vender loción"],
+    diag: "El usuario vende un producto físico y necesita diferenciación, identidad visual con assets reales, copy para todos los puntos de contacto, tráfico y flujo de ventas.",
+    gems:[
+      {name:"Aura",role:"Segmentación y nichos"},
+      {name:"Kratos",role:"Diferenciación del producto"},
+      {name:"Brandon",role:"Sistema visual de la marca"},
+      {name:"Pixel",role:"Assets visuales reales"},
+      {name:"Schwartz",role:"Mensaje por canal"},
+      {name:"AdsStrategy",role:"Tráfico pago (condicional)"},
+      {name:"CopyMaster",role:"Copy para tienda, ads y recompra"},
+      {name:"ReelPro",role:"Guiones A y B para video"},
+      {name:"VentasFlow",role:"Flujo WhatsApp"}
     ],
-    pipeline: [
-      {gem:"Aura", desc:"2-3 Buyer Personas por rentabilidad con triggers emocionales y tabla de objeciones."},
-      {gem:"Kratos", desc:"PUV que elimina el lenguaje genérico y nombra el beneficio tangible específico."},
-      {gem:"Brandon", desc:"Sistema visual: personalidad, paleta HEX, tipografía, logo y moodboard."},
-      {gem:"Schwartz", desc:"Estrategia de mensajería por canal + bloque HANDOFF para CopyMaster."},
-      {gem:"CopyMaster", desc:"Fichas de producto, copy para ads Meta/Instagram y emails de recompra."},
-      {gem:"ReelPro", desc:"2 versiones de guión con hooks distintos (A y B) para testing."},
-      {gem:"VentasFlow", desc:"Flujo de 12 momentos (M1-M12) con recuperación."}
+    pipeline:[
+      {gem:"Aura",desc:"2-3 Buyer Personas por rentabilidad con triggers emocionales y objeciones."},
+      {gem:"Kratos",desc:"Beneficio tangible específico. PUV en 3 formatos."},
+      {gem:"Brandon",desc:"Personalidad, paleta HEX, tipografía, logo y moodboard en texto."},
+      {gem:"Pixel",desc:"Prompts para foto de producto, mockups de empaque y gráficos de anuncios."},
+      {gem:"Schwartz",desc:"Estrategia por canal + bloque HANDOFF para AdsStrategy y CopyMaster."},
+      {gem:"AdsStrategy",desc:"Solo si incluye pauta paga: ángulos alineados con assets de Pixel. Luego AdsMaster."},
+      {gem:"CopyMaster",desc:"Fichas de producto, copy para anuncios Meta/Instagram, emails de recompra."},
+      {gem:"ReelPro",desc:"2 versiones con hooks distintos (A y B) para testing."},
+      {gem:"VentasFlow",desc:"12 momentos (M1-M12) con recuperación."}
     ]
   },
   5: {
     name: "Construcción de marca personal desde cero",
     triggers: ["marca personal","invisible","personal brand","linkedin","posicionarme","hacerme conocer","me conozcan","reputación","autoridad","referente","nadie me conoce","sin audiencia","desde cero","visibilidad","presencia digital"],
-    diag: "El usuario tiene conocimiento pero es invisible digitalmente. Necesita posicionamiento, identidad visual, assets de imagen, perfil de LinkedIn y contenido humanizado.",
-    gems: [
-      {name:"Aura", role:"Audiencia y posicionamiento estratégico"},
-      {name:"Kratos", role:"Mensaje central de la marca"},
-      {name:"Brandon", role:"Identidad visual"},
-      {name:"Pixel", role:"Prompts para assets de imagen"},
-      {name:"Brandlink", role:"Perfil de LinkedIn optimizado"},
-      {name:"Copylink", role:"5 posts del primer mes"},
-      {name:"ReelPro", role:"Guiones para Reels/TikTok"},
-      {name:"HumanText", role:"Humanización de todo el contenido"}
+    diag: "El usuario quiere visibilidad digital. Este sistema entrega primera tracción de interés, no conversión. Para monetizar: Sistema 3 (servicios) o Sistema 1 (productizar).",
+    gems:[
+      {name:"Aura",role:"Audiencia de la marca"},
+      {name:"Kratos",role:"Mensaje central"},
+      {name:"Brandon",role:"Identidad visual"},
+      {name:"Pixel",role:"Assets visuales reales"},
+      {name:"Brandlink",role:"LinkedIn optimizado"},
+      {name:"Copylink",role:"5 posts del primer mes"},
+      {name:"ReelPro",role:"Guiones para Reels"},
+      {name:"HumanText",role:"Humanización del contenido"}
     ],
-    pipeline: [
-      {gem:"Aura", desc:"Buyer Persona con nivel de consciencia, dolores y objeciones hacia contenido del nicho."},
-      {gem:"Kratos", desc:"PUV personal, bio de 3 líneas y elevator pitch de 30 segundos."},
-      {gem:"Brandon", desc:"Paleta HEX, tipografía, tipo de logo y moodboard con referencias aplicables."},
-      {gem:"Pixel", desc:"Prompts técnicos para foto de perfil y gráficos de apoyo (Midjourney/DALL·E)."},
-      {gem:"Brandlink", desc:"2 versiones de titular, secciones reescritas y plan de cohesión."},
-      {gem:"Copylink", desc:"5 posts con arco narrativo. Ganchos primero, luego posts completos."},
-      {gem:"ReelPro", desc:"2 versiones de guión con hooks distintos para Reels o TikTok."},
-      {gem:"HumanText", desc:"Todo el contenido humanizado — posts, secciones del perfil y guiones."}
+    pipeline:[
+      {gem:"Aura",desc:"Buyer Persona con dolores y objeciones hacia contenido del nicho."},
+      {gem:"Kratos",desc:"PUV personal, bio de 3 líneas y elevator pitch de 30 segundos."},
+      {gem:"Brandon",desc:"Paleta HEX, tipografía, logo y moodboard en texto."},
+      {gem:"Pixel",desc:"Prompts para foto de perfil y gráficos de apoyo."},
+      {gem:"Brandlink",desc:"2 versiones de titular, secciones reescritas y plan de cohesión."},
+      {gem:"Copylink",desc:"5 posts con arco narrativo. Ganchos primero, luego completos."},
+      {gem:"ReelPro",desc:"2 versiones con hooks distintos para Reels o TikTok."},
+      {gem:"HumanText",desc:"Todo el contenido humanizado. Procesar pieza por pieza."}
     ]
   },
   6: {
     name: "Máquina de contenido multicanal",
     triggers: ["producir contenido","crear contenido","publicar contenido","contenido semanal","contenido consistente","redes sociales","pipeline de contenido","calendario editorial","contenido","publicar","reels","posts","instagram","tiktok","youtube","newsletter","email semanal","consistencia","multicanal","creador de contenido","estrategia de contenido"],
     diag: "El usuario necesita un sistema semanal de producción de contenido para múltiples plataformas con consistencia de mensaje.",
-    gems: [
-      {name:"Schwartz", role:"Dirección creativa semanal"},
-      {name:"Copylink", role:"Posts de LinkedIn"},
-      {name:"ReelPro", role:"Guiones de Reels"},
-      {name:"SeoVid", role:"Descripciones de YouTube"},
-      {name:"ReelAudit", role:"Auditoría de guiones"},
-      {name:"HumanText", role:"Humanización final"}
+    gems:[
+      {name:"Schwartz",role:"Dirección creativa semanal"},
+      {name:"Copylink",role:"Posts de LinkedIn"},
+      {name:"ReelPro",role:"Guiones de Reels"},
+      {name:"SeoVid",role:"Descripciones YouTube"},
+      {name:"ReelAudit",role:"Auditoría de guiones"},
+      {name:"HumanText",role:"Humanización final"}
     ],
-    pipeline: [
-      {gem:"Schwartz", desc:"Lunes: 3-5 ángulos + bloque HANDOFF para los Gems productores."},
-      {gem:"Copylink", desc:"Mar/Mié: 2-3 posts con ganchos aprobados antes de desarrollar."},
-      {gem:"ReelPro", desc:"Mar/Mié: versiones A y B con hooks distintos para testing."},
-      {gem:"SeoVid", desc:"Mar/Mié: descripción optimizada con gancho, keywords y hashtags."},
-      {gem:"ReelAudit", desc:"Jueves: diagnóstico Hook/Contenido/CTA. Solo si el hook se siente débil."},
-      {gem:"HumanText", desc:"Jueves: todo el contenido de la semana en una sola sesión."}
+    pipeline:[
+      {gem:"Schwartz",desc:"Lunes: 3-5 ángulos + bloque HANDOFF para los Gems productores."},
+      {gem:"Copylink",desc:"Mar/Mié: 2-3 posts con ganchos aprobados."},
+      {gem:"ReelPro",desc:"Mar/Mié: versiones A y B con hooks distintos."},
+      {gem:"SeoVid",desc:"Mar/Mié: descripción optimizada con gancho y keywords."},
+      {gem:"ReelAudit",desc:"Jueves: solo si el hook se siente débil."},
+      {gem:"HumanText",desc:"Jueves: todo el contenido pieza por pieza."}
     ]
   },
   7: {
     name: "Auditoría y optimización de funnel existente",
     triggers: ["funnel","optimizar","conversiones","no convierte","anuncios","ads","resultados bajos","fuga","mejorar","landing no convierte","tasa de conversión","cpa alto","roas bajo","funnel existente","ya tengo","no funciona"],
-    diag: "El usuario tiene un funnel activo pero con conversiones bajas. Necesita diagnóstico del nivel de consciencia, auditoría de assets y reescritura calibrada.",
-    gems: [
-      {name:"Schwartz", role:"Diagnóstico de consciencia"},
-      {name:"AdsAudit", role:"Auditoría de creativos"},
-      {name:"ReelAudit", role:"Auditoría de guiones de video"},
-      {name:"Kratos", role:"Recalibración de PUV (condicional)"},
-      {name:"Alex", role:"Reconstrucción de oferta (condicional)"},
-      {name:"CopyMaster", role:"Reescritura del copy"},
-      {name:"SalesSim", role:"Entrenamiento con objeciones reales"},
-      {name:"HumanText", role:"Control de calidad"},
-      {name:"VentasFlow", role:"Secuencia reconstruida"}
+    diag: "El usuario tiene un funnel activo con conversiones bajas. El diagnóstico empieza por datos reales, no por criterio cualitativo.",
+    gems:[
+      {name:"TrackingDiagnostics",role:"Diagnóstico cuantitativo por etapa"},
+      {name:"Schwartz",role:"Nivel de consciencia vs. mensaje"},
+      {name:"AdsAudit",role:"Auditoría de creativos"},
+      {name:"Kratos",role:"Recalibración PUV (condicional)"},
+      {name:"Alex",role:"Reconstrucción oferta (condicional)"},
+      {name:"CopyMaster",role:"Reescritura del copy"},
+      {name:"SalesSim",role:"Entrenamiento con objeciones reales"},
+      {name:"HumanText",role:"Control de calidad"},
+      {name:"VentasFlow",role:"Secuencia reconstruida"}
     ],
-    pipeline: [
-      {gem:"Schwartz", desc:"Nivel real de la audiencia vs. mensaje actual. Bloque HANDOFF para auditores."},
-      {gem:"AdsAudit", desc:"6 pilares ponderados, causa raíz en una frase y 3 cambios priorizados."},
-      {gem:"ReelAudit", desc:"Hook/Contenido/CTA con severidad y versión reescrita."},
-      {gem:"Kratos", desc:"Solo si el diferenciador es el problema de fondo. PUV recalibrada."},
-      {gem:"Alex", desc:"Solo si la oferta (precio, garantía, bonos) es el problema. Ecuación de Valor corregida."},
-      {gem:"CopyMaster", desc:"Assets reescritos con el framework apropiado al nivel de consciencia."},
-      {gem:"SalesSim", desc:"Entrenamiento con las objeciones específicas que expuso la auditoría."},
-      {gem:"HumanText", desc:"Control de calidad antes de reimplementar."},
-      {gem:"VentasFlow", desc:"Secuencia reconstruida si tiene problemas estructurales."}
+    pipeline:[
+      {gem:"TrackingDiagnostics",desc:"Mapa de pérdida por etapa. Señala dónde actuar antes del análisis cualitativo."},
+      {gem:"Schwartz",desc:"Nivel real vs. mensaje actual. Bloque HANDOFF para auditores."},
+      {gem:"AdsAudit",desc:"6 pilares ponderados, causa raíz en una frase, 3 cambios priorizados."},
+      {gem:"Kratos",desc:"Solo si el diferenciador es el problema de fondo."},
+      {gem:"Alex",desc:"Solo si la oferta (precio, garantía, bonos) es el problema."},
+      {gem:"CopyMaster",desc:"Reescritura calibrada al nivel de consciencia. LandingPro si la fuga es la landing."},
+      {gem:"SalesSim",desc:"Entrenamiento con las objeciones específicas de la auditoría."},
+      {gem:"HumanText",desc:"QA final antes de reimplementar. Pieza por pieza."},
+      {gem:"VentasFlow",desc:"Reconstruye si hay problemas estructurales."}
     ]
   },
   8: {
     name: "Reinvención profesional",
     triggers: ["reinvención","reinventarme","cambiar","transición","carrera","industria","monetizar diferente","nuevo campo","empezar de nuevo","cambio de rumbo","reorientar","pivot","pivotar","nueva dirección","dejar mi trabajo","independizarme"],
-    diag: "El usuario está en transición de carrera. Necesita claridad de dirección, plan de desarrollo, nuevo posicionamiento y presencia digital reencuadrada.",
-    gems: [
-      {name:"Kenji", role:"Descubrimiento de nueva dirección"},
-      {name:"MentorPro", role:"Plan estratégico de desarrollo"},
-      {name:"Aura", role:"Audiencia en el nuevo campo"},
-      {name:"Kratos", role:"Mensaje diferenciador de transición"},
-      {name:"Brandlink", role:"LinkedIn reorientado"},
-      {name:"Copylink", role:"5 posts en el nuevo campo"}
+    diag: "El usuario está en transición. Este sistema entrega posicionamiento, no ejecución comercial. Para monetizar: Sistema 3 o Sistema 1.",
+    gems:[
+      {name:"Kenji",role:"Descubrimiento de nueva dirección"},
+      {name:"MentorPro",role:"Plan estratégico de desarrollo"},
+      {name:"Aura",role:"Audiencia en el nuevo campo"},
+      {name:"Kratos",role:"Mensaje diferenciador de transición"},
+      {name:"Brandlink",role:"LinkedIn reorientado"},
+      {name:"Copylink",role:"5 posts en el nuevo campo"}
     ],
-    pipeline: [
-      {gem:"Kenji", desc:"Descubrimiento del 'hacia dónde' mediante Ikigai aplicado."},
-      {gem:"MentorPro", desc:"Brechas, palancas y plan con tareas atómicas para esta semana."},
-      {gem:"Aura", desc:"Buyer Persona del nuevo mercado y objeciones a la transición."},
-      {gem:"Kratos", desc:"PUV que reencuadra el pasado como ventaja en el nuevo campo."},
-      {gem:"Brandlink", desc:"Perfil reconstruido con el nuevo posicionamiento sin borrar la trayectoria."},
-      {gem:"Copylink", desc:"5 posts que posicionan en el nuevo campo usando la experiencia anterior."}
+    pipeline:[
+      {gem:"Kenji",desc:"Descubrimiento del 'hacia dónde' mediante Ikigai aplicado."},
+      {gem:"MentorPro",desc:"Brechas, palancas y plan con tareas atómicas para esta semana."},
+      {gem:"Aura",desc:"Buyer Persona del nuevo mercado y objeciones a la transición."},
+      {gem:"Kratos",desc:"PUV que reencuadra el pasado como ventaja en el nuevo campo."},
+      {gem:"Brandlink",desc:"Perfil reconstruido con nuevo posicionamiento sin borrar trayectoria."},
+      {gem:"Copylink",desc:"5 posts que posicionan en el nuevo campo reencuadrando el pasado."}
     ]
   }
 };
